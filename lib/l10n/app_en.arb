@@ -1,0 +1,248 @@
+{
+  "@@locale": "en",
+  "appTitle": "PokiFairy",
+  "@appTitle": {
+    "description": "Default app title"
+  },
+  "gateLoading": "Bringing your fairy home...",
+  "@gateLoading": {
+    "description": "Gate screen loading message"
+  },
+  "gateError": "We could not wake the fairy.",
+  "@gateError": {
+    "description": "Gate screen error message"
+  },
+  "retryButton": "Retry",
+  "@retryButton": {
+    "description": "Retry button label"
+  },
+  "setupTitle": "Name Your Fairy",
+  "@setupTitle": {
+    "description": "Fairy creation screen title"
+  },
+  "setupDescription": "Give your pocket fairy a name.",
+  "@setupDescription": {
+    "description": "Fairy creation screen description"
+  },
+  "setupNameLabel": "Fairy name",
+  "@setupNameLabel": {
+    "description": "Fairy name input label"
+  },
+  "setupNameHint": "Example: Lumi",
+  "@setupNameHint": {
+    "description": "Fairy name input hint"
+  },
+  "setupValidationEmpty": "Please enter a name.",
+  "@setupValidationEmpty": {
+    "description": "Form validation message"
+  },
+  "setupValidationTooLong": "Name must be 12 characters or fewer.",
+  "@setupValidationTooLong": {
+    "description": "Validation message when the name is too long"
+  },
+  "setupCreateButton": "Create Fairy",
+  "@setupCreateButton": {
+    "description": "Fairy creation button label"
+  },
+  "homeGreeting": "Hello, {name}!",
+  "@homeGreeting": {
+    "description": "Home screen greeting",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTodayGreeting": "Sharing today with {name}",
+  "@homeTodayGreeting": {
+    "description": "Home top greeting",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeLevelLabel": "Level {level}",
+  "@homeLevelLabel": {
+    "description": "Home level label",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "homeActionSectionTitle": "Fairy Care",
+  "@homeActionSectionTitle": {
+    "description": "Action section title"
+  },
+  "homeActionPrompt": "How would you like to care for your fairy?",
+  "@homeActionPrompt": {
+    "description": "Action section prompt"
+  },
+  "homeAffectionLabel": "Affection: {count}",
+  "@homeAffectionLabel": {
+    "description": "Affection counter",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeLastInteraction": "Last bonding time: {timestamp}",
+  "@homeLastInteraction": {
+    "description": "Last interaction label",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "homeLastInteractionNever": "No bonding moments yet.",
+  "@homeLastInteractionNever": {
+    "description": "No interaction recorded"
+  },
+  "homeResetTooltip": "Reset fairy",
+  "@homeResetTooltip": {
+    "description": "Reset button tooltip"
+  },
+  "homeQuickLinksTitle": "Quick links",
+  "@homeQuickLinksTitle": {
+    "description": "Home quick links section title"
+  },
+  "actionFeed": "Share a snack",
+  "@actionFeed": {
+    "description": "Snack action button"
+  },
+  "actionPlay": "Play together",
+  "@actionPlay": {
+    "description": "Play action button"
+  },
+  "actionRest": "Let sleep",
+  "@actionRest": {
+    "description": "Rest action button"
+  },
+  "dialogActionResultTitle": "Fairy's response",
+  "@dialogActionResultTitle": {
+    "description": "Action result dialog title"
+  },
+  "dialogActionResultMessageFeed": "{name} enjoyed the snack!",
+  "@dialogActionResultMessageFeed": {
+    "description": "Snack action result",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogActionResultMessagePlay": "{name} had so much fun!",
+  "@dialogActionResultMessagePlay": {
+    "description": "Play action result",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogActionResultMessageRest": "{name} is feeling refreshed.",
+  "@dialogActionResultMessageRest": {
+    "description": "Rest action result",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogButtonOk": "OK",
+  "@dialogButtonOk": {
+    "description": "Confirmation button label"
+  },
+  "dialogButtonCancel": "Cancel",
+  "@dialogButtonCancel": {
+    "description": "Cancel button label"
+  },
+  "speciesSpirit": "Spirit",
+  "@speciesSpirit": {
+    "description": "Species label - spirit"
+  },
+  "speciesElf": "Elf",
+  "@speciesElf": {
+    "description": "Species label - elf"
+  },
+  "speciesHumanlike": "Humanlike",
+  "@speciesHumanlike": {
+    "description": "Species label - humanlike"
+  },
+  "statCardTitle": "Fairy stats",
+  "@statCardTitle": {
+    "description": "Stat card title"
+  },
+  "statMoodLabel": "Mood",
+  "@statMoodLabel": {
+    "description": "Mood label"
+  },
+  "statHungerLabel": "Hunger",
+  "@statHungerLabel": {
+    "description": "Hunger label"
+  },
+  "statEnergyLabel": "Energy",
+  "@statEnergyLabel": {
+    "description": "Energy label"
+  },
+  "statExpLabel": "Experience {current}/{goal}",
+  "@statExpLabel": {
+    "description": "Experience progress label",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "goal": {
+        "type": "int"
+      }
+    }
+  },
+  "statLastTickLabel": "Last update: {timestamp}",
+  "@statLastTickLabel": {
+    "description": "Last tick timestamp",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "landingEmptyTitle": "No fairy has hatched yet",
+  "@landingEmptyTitle": {
+    "description": "Landing empty state title"
+  },
+  "landingEmptyDescription": "Create your first fairy and welcome a new pocket companion.",
+  "@landingEmptyDescription": {
+    "description": "Landing empty state description"
+  },
+  "landingCreateButton": "Start creating a fairy",
+  "@landingCreateButton": {
+    "description": "Landing create button"
+  },
+  "landingExistingTitle": "Your fairy",
+  "@landingExistingTitle": {
+    "description": "Landing existing fairy title"
+  },
+  "landingOpenButton": "Jump in and play",
+  "@landingOpenButton": {
+    "description": "Landing open button"
+  },
+  "landingDeleteButton": "Remove fairy",
+  "@landingDeleteButton": {
+    "description": "Landing delete button"
+  },
+  "landingDeleteDialogTitle": "Reset your fairy?",
+  "@landingDeleteDialogTitle": {
+    "description": "Landing delete dialog title"
+  },
+  "landingDeleteDialogMessage": "All growth progress will disappear after resetting.",
+  "@landingDeleteDialogMessage": {
+    "description": "Landing delete dialog message"
+  },
+  "landingDeletedMessage": "Your fairy has been released. Create a new friend anytime!",
+  "@landingDeletedMessage": {
+    "description": "Landing delete snackbar"
+  }
+}

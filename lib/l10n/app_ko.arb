@@ -1,0 +1,260 @@
+{
+  "@@locale": "ko",
+  "appTitle": "포키페어리",
+  "@appTitle": {
+    "description": "앱의 기본 제목"
+  },
+  "gateLoading": "요정을 데려오는 중...",
+  "@gateLoading": {
+    "description": "게이트 화면 로딩 메시지"
+  },
+  "gateError": "요정을 불러오지 못했어요.",
+  "@gateError": {
+    "description": "게이트 화면 오류 메시지"
+  },
+  "retryButton": "다시 시도",
+  "@retryButton": {
+    "description": "재시도 버튼 라벨"
+  },
+  "setupTitle": "요정 이름 짓기",
+  "@setupTitle": {
+    "description": "요정 생성 화면 제목"
+  },
+  "setupDescription": "당신의 요정에게 이름을 붙여 주세요.",
+  "@setupDescription": {
+    "description": "요정 생성 화면 설명"
+  },
+  "setupNameLabel": "요정 이름",
+  "@setupNameLabel": {
+    "description": "요정 이름 입력 라벨"
+  },
+  "setupNameHint": "예: 루미",
+  "@setupNameHint": {
+    "description": "요정 이름 입력 힌트"
+  },
+  "setupValidationEmpty": "이름을 입력해 주세요.",
+  "@setupValidationEmpty": {
+    "description": "폼 검증 메시지"
+  },
+  "setupValidationTooLong": "이름은 12자 이하로 입력해 주세요.",
+  "@setupValidationTooLong": {
+    "description": "이름 길이 검증 메시지"
+  },
+  "setupCreateButton": "요정 만들기",
+  "@setupCreateButton": {
+    "description": "요정 생성 버튼 라벨"
+  },
+  "speciesSpirit": "정령",
+  "@speciesSpirit": {
+    "description": "종족 라벨 - 정령"
+  },
+  "speciesElf": "엘프",
+  "@speciesElf": {
+    "description": "종족 라벨 - 엘프"
+  },
+  "speciesHumanlike": "휴먼형",
+  "@speciesHumanlike": {
+    "description": "종족 라벨 - 휴먼형"
+  },
+  "homeGreeting": "안녕, {name}!",
+  "@homeGreeting": {
+    "description": "홈 화면 인사",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTodayGreeting": "{name}와 함께해요",
+  "@homeTodayGreeting": {
+    "description": "홈 화면 상단 인사",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeLevelLabel": "레벨 {level}",
+  "@homeLevelLabel": {
+    "description": "홈 화면 레벨 라벨",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "homeActionSectionTitle": "요정과 교감하기",
+  "@homeActionSectionTitle": {
+    "description": "행동 섹션 제목"
+  },
+  "homeActionPrompt": "요정과 어떤 놀이를 할까요?",
+  "@homeActionPrompt": {
+    "description": "행동 섹션 설명"
+  },
+  "homeAffectionLabel": "친밀도: {count}",
+  "@homeAffectionLabel": {
+    "description": "친밀도 표시",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeLastInteraction": "마지막 교감: {timestamp}",
+  "@homeLastInteraction": {
+    "description": "마지막 상호작용 표시",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "homeLastInteractionNever": "아직 교감 기록이 없어요.",
+  "@homeLastInteractionNever": {
+    "description": "상호작용 기록 없음"
+  },
+  "homeResetTooltip": "요정 리셋",
+  "@homeResetTooltip": {
+    "description": "리셋 버튼 툴팁"
+  },
+  "homeQuickLinksTitle": "빠른 이동",
+  "@homeQuickLinksTitle": {
+    "description": "홈 화면 빠른 링크 섹션 제목"
+  },
+  "actionFeed": "간식 주기",
+  "@actionFeed": {
+    "description": "간식 액션 버튼"
+  },
+  "actionPlay": "놀아주기",
+  "@actionPlay": {
+    "description": "놀이 액션 버튼"
+  },
+  "actionRest": "재우기",
+  "@actionRest": {
+    "description": "휴식 액션 버튼"
+  },
+  "dialogActionResultTitle": "요정의 반응",
+  "@dialogActionResultTitle": {
+    "description": "액션 결과 다이얼로그 제목"
+  },
+  "dialogActionResultMessageFeed": "{name}가 간식을 맛있게 먹었어요!",
+  "@dialogActionResultMessageFeed": {
+    "description": "간식 액션 결과",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogActionResultMessagePlay": "{name}가 신나게 놀았어요!",
+  "@dialogActionResultMessagePlay": {
+    "description": "놀이 액션 결과",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogActionResultMessageRest": "{name}가 포근한 휴식을 취했어요.",
+  "@dialogActionResultMessageRest": {
+    "description": "휴식 액션 결과",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogButtonOk": "확인",
+  "@dialogButtonOk": {
+    "description": "확인 버튼 라벨"
+  },
+  "dialogButtonCancel": "취소",
+  "@dialogButtonCancel": {
+    "description": "취소 버튼 라벨"
+  },
+  "speciesSpirit": "정령",
+  "@speciesSpirit": {
+    "description": "종족 라벨 - 정령"
+  },
+  "speciesElf": "엘프",
+  "@speciesElf": {
+    "description": "종족 라벨 - 엘프"
+  },
+  "speciesHumanlike": "휴먼형",
+  "@speciesHumanlike": {
+    "description": "종족 라벨 - 휴먼형"
+  },
+  "statCardTitle": "요정 상태",
+  "@statCardTitle": {
+    "description": "상태 카드 제목"
+  },
+  "statMoodLabel": "기분",
+  "@statMoodLabel": {
+    "description": "기분 수치 라벨"
+  },
+  "statHungerLabel": "배고픔",
+  "@statHungerLabel": {
+    "description": "배고픔 수치 라벨"
+  },
+  "statEnergyLabel": "에너지",
+  "@statEnergyLabel": {
+    "description": "에너지 수치 라벨"
+  },
+  "statExpLabel": "경험치 {current}/{goal}",
+  "@statExpLabel": {
+    "description": "경험치 진행률 라벨",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "goal": {
+        "type": "int"
+      }
+    }
+  },
+  "statLastTickLabel": "마지막 갱신: {timestamp}",
+  "@statLastTickLabel": {
+    "description": "마지막 tick 시각",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "landingEmptyTitle": "아직 요정을 만들지 않았어요",
+  "@landingEmptyTitle": {
+    "description": "랜딩 빈 상태 제목"
+  },
+  "landingEmptyDescription": "먼저 요정을 만들어 포근한 친구를 맞이해 보세요.",
+  "@landingEmptyDescription": {
+    "description": "랜딩 빈 상태 설명"
+  },
+  "landingCreateButton": "요정 만들러 가기",
+  "@landingCreateButton": {
+    "description": "온보딩 이동 버튼"
+  },
+  "landingExistingTitle": "나의 요정",
+  "@landingExistingTitle": {
+    "description": "랜딩 기존 요정 카드 제목"
+  },
+  "landingOpenButton": "요정과 놀러 가기",
+  "@landingOpenButton": {
+    "description": "홈 이동 버튼"
+  },
+  "landingDeleteButton": "요정 삭제",
+  "@landingDeleteButton": {
+    "description": "요정 삭제 버튼"
+  },
+  "landingDeleteDialogTitle": "요정을 초기화할까요?",
+  "@landingDeleteDialogTitle": {
+    "description": "삭제 확인 제목"
+  },
+  "landingDeleteDialogMessage": "초기화하면 요정의 모든 성장 기록이 사라집니다.",
+  "@landingDeleteDialogMessage": {
+    "description": "삭제 확인 메시지"
+  },
+  "landingDeletedMessage": "요정을 떠나보냈어요. 새로운 친구를 다시 맞이해 주세요.",
+  "@landingDeletedMessage": {
+    "description": "삭제 완료 스낵바 메시지"
+  }
+}
