@@ -121,6 +121,10 @@
   "@homeQuickLinksTitle": {
     "description": "홈 화면 빠른 링크 섹션 제목"
   },
+  "homeAiChatButton": "AI와 대화하기",
+  "@homeAiChatButton": {
+    "description": "AI 채팅 진입 버튼"
+  },
   "actionFeed": "간식 주기",
   "@actionFeed": {
     "description": "간식 액션 버튼"
@@ -268,5 +272,247 @@
   "chatInputHint": "메시지를 입력하세요...",
   "@chatInputHint": {
     "description": "채팅 입력 힌트"
+  },
+  "chatEmptyHint": "AI와 대화를 시작해보세요",
+  "@chatEmptyHint": {
+    "description": "빈 채팅 상태 힌트"
+  },
+  "clearHistory": "대화 기록 삭제",
+  "@clearHistory": {
+    "description": "대화 기록 삭제 버튼"
+  },
+  "clearHistoryConfirm": "모든 대화 기록을 삭제하시겠습니까?",
+  "@clearHistoryConfirm": {
+    "description": "대화 기록 삭제 확인 메시지"
+  },
+  "cancel": "취소",
+  "@cancel": {
+    "description": "취소 버튼"
+  },
+  "clear": "삭제",
+  "@clear": {
+    "description": "삭제 버튼"
+  },
+  "retry": "다시 시도",
+  "@retry": {
+    "description": "재시도 버튼"
+  },
+  "aiThinking": "생각 중...",
+  "@aiThinking": {
+    "description": "AI 응답 대기 중"
+  },
+  "modelSelectionTitle": "AI 모델 선택",
+  "@modelSelectionTitle": {
+    "description": "모델 선택 페이지 제목"
+  },
+  "modelSelectionDescription": "사용할 AI 모델을 선택하세요",
+  "@modelSelectionDescription": {
+    "description": "모델 선택 페이지 설명"
+  },
+  "noModelsFound": "사용 가능한 모델이 없습니다",
+  "@noModelsFound": {
+    "description": "모델 없음 메시지"
+  },
+  "noModelsDescription": "AiModels 폴더에 GGUF 모델 파일을 추가해주세요",
+  "@noModelsDescription": {
+    "description": "모델 없음 설명"
+  },
+  "currentModel": "현재 모델",
+  "@currentModel": {
+    "description": "현재 선택된 모델 라벨"
+  },
+  "selectModel": "선택",
+  "@selectModel": {
+    "description": "모델 선택 버튼"
+  },
+  "modelSelected": "모델이 선택되었습니다",
+  "@modelSelected": {
+    "description": "모델 선택 성공 메시지"
+  },
+  "modelSelectionFailed": "모델 선택에 실패했습니다",
+  "@modelSelectionFailed": {
+    "description": "모델 선택 실패 메시지"
+  },
+  "permissionRequired": "저장소 권한이 필요합니다",
+  "@permissionRequired": {
+    "description": "권한 필요 메시지"
+  },
+  "requestPermission": "권한 요청",
+  "@requestPermission": {
+    "description": "권한 요청 버튼"
+  },
+  "openSettings": "설정 열기",
+  "@openSettings": {
+    "description": "설정 열기 버튼"
+  },
+  "refreshModels": "새로고침",
+  "@refreshModels": {
+    "description": "모델 목록 새로고침 버튼"
+  },
+  "modelDebugTitle": "AI 디버그 정보",
+  "@modelDebugTitle": {
+    "description": "모델 디버그 페이지 제목"
+  },
+  "debugRefresh": "새로고침",
+  "@debugRefresh": {
+    "description": "디버그 정보 새로고침"
+  },
+  "debugInitStatus": "AI 초기화 상태",
+  "@debugInitStatus": {
+    "description": "초기화 상태 섹션 제목"
+  },
+  "debugModelInfo": "현재 모델 정보",
+  "@debugModelInfo": {
+    "description": "모델 정보 섹션 제목"
+  },
+  "debugFFIStatus": "FFI 연결 상태",
+  "@debugFFIStatus": {
+    "description": "FFI 상태 섹션 제목"
+  },
+  "debugSystemInfo": "시스템 정보",
+  "@debugSystemInfo": {
+    "description": "시스템 정보 섹션 제목"
+  },
+  "debugEngineStatus": "추론 엔진 상태",
+  "@debugEngineStatus": {
+    "description": "엔진 상태 섹션 제목"
+  },
+  "debugLogs": "디버그 로그",
+  "@debugLogs": {
+    "description": "디버그 로그 섹션 제목"
+  },
+  "copyLogs": "로그 복사",
+  "@copyLogs": {
+    "description": "로그 복사 버튼"
+  },
+  "logsCopied": "로그가 클립보드에 복사되었습니다",
+  "@logsCopied": {
+    "description": "로그 복사 완료 메시지"
+  },
+  "settingsTitle": "설정",
+  "@settingsTitle": {
+    "description": "설정 페이지 제목"
+  },
+  "settingsAiSection": "AI 설정",
+  "@settingsAiSection": {
+    "description": "AI 설정 섹션 제목"
+  },
+  "settingsModelSelection": "AI 모델 선택",
+  "@settingsModelSelection": {
+    "description": "모델 선택 메뉴"
+  },
+  "settingsModelSelectionDescription": "사용할 AI 모델을 선택하세요",
+  "@settingsModelSelectionDescription": {
+    "description": "모델 선택 메뉴 설명"
+  },
+  "settingsModelDebug": "AI 디버그 정보",
+  "@settingsModelDebug": {
+    "description": "디버그 정보 메뉴"
+  },
+  "settingsModelDebugDescription": "AI 모델 상태 및 디버그 정보 확인",
+  "@settingsModelDebugDescription": {
+    "description": "디버그 정보 메뉴 설명"
+  },
+  "settingsAboutSection": "정보",
+  "@settingsAboutSection": {
+    "description": "정보 섹션 제목"
+  },
+  "settingsAbout": "앱 정보",
+  "@settingsAbout": {
+    "description": "앱 정보 메뉴"
+  },
+  "settingsAboutDescription": "PokiFairy는 포켓 페어리 컴패니언과 AI 어시스턴트가 결합된 앱입니다.",
+  "@settingsAboutDescription": {
+    "description": "앱 정보 설명"
+  },
+  "errorModelNotFound": "사용 가능한 AI 모델이 없습니다. 모델을 다운로드해주세요.",
+  "@errorModelNotFound": {
+    "description": "모델 없음 에러 메시지"
+  },
+  "errorModelLoadFailed": "AI 모델을 불러오는데 실패했습니다. 모델 파일을 확인해주세요.",
+  "@errorModelLoadFailed": {
+    "description": "모델 로드 실패 에러 메시지"
+  },
+  "errorInference": "AI 응답 생성 중 오류가 발생했습니다. 다시 시도해주세요.",
+  "@errorInference": {
+    "description": "추론 에러 메시지"
+  },
+  "errorPermissionDenied": "저장소 접근 권한이 필요합니다. 설정에서 권한을 허용해주세요.",
+  "@errorPermissionDenied": {
+    "description": "권한 거부 에러 메시지"
+  },
+  "errorInsufficientMemory": "메모리가 부족합니다. 다른 앱을 종료하고 다시 시도해주세요.",
+  "@errorInsufficientMemory": {
+    "description": "메모리 부족 에러 메시지"
+  },
+  "errorNetwork": "네트워크 연결을 확인해주세요.",
+  "@errorNetwork": {
+    "description": "네트워크 에러 메시지"
+  },
+  "errorUnknown": "알 수 없는 오류가 발생했습니다.",
+  "@errorUnknown": {
+    "description": "알 수 없는 에러 메시지"
+  },
+  "justNow": "방금 전",
+  "@justNow": {
+    "description": "방금 전 메시지 타임스탬프"
+  },
+  "minutesAgo": "{minutes}분 전",
+  "@minutesAgo": {
+    "description": "분 단위 타임스탬프",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{days}일 전",
+  "@daysAgo": {
+    "description": "일 단위 타임스탬프",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "permissionDialogTitle": "권한 필요",
+  "@permissionDialogTitle": {
+    "description": "권한 다이얼로그 제목"
+  },
+  "permissionDialogMessage": "AI 모델에 접근하기 위해 저장소 권한이 필요합니다. 권한을 허용해주세요.",
+  "@permissionDialogMessage": {
+    "description": "권한 다이얼로그 메시지"
+  },
+  "permissionDialogCancel": "취소",
+  "@permissionDialogCancel": {
+    "description": "권한 다이얼로그 취소 버튼"
+  },
+  "permissionDialogAllow": "권한 허용",
+  "@permissionDialogAllow": {
+    "description": "권한 다이얼로그 허용 버튼"
+  },
+  "permissionSettingsTitle": "권한 설정 필요",
+  "@permissionSettingsTitle": {
+    "description": "권한 설정 다이얼로그 제목"
+  },
+  "permissionSettingsMessage": "권한이 거부되었습니다. 설정에서 권한을 허용해주세요.",
+  "@permissionSettingsMessage": {
+    "description": "권한 설정 다이얼로그 메시지"
+  },
+  "sendMessage": "전송",
+  "@sendMessage": {
+    "description": "메시지 전송 버튼"
+  },
+  "noModelTitle": "AI 모델이 없습니다",
+  "@noModelTitle": {
+    "description": "모델 없음 제목"
+  },
+  "noModelDescription": "AI와 대화하려면 먼저 모델을 선택해주세요.",
+  "@noModelDescription": {
+    "description": "모델 없음 설명"
+  },
+  "goToModelSelection": "모델 선택하기",
+  "@goToModelSelection": {
+    "description": "모델 선택 화면으로 이동 버튼"
   }
 }

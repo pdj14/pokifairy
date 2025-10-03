@@ -91,6 +91,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get homeQuickLinksTitle => '빠른 이동';
 
   @override
+  String get homeAiChatButton => 'AI와 대화하기';
+
+  @override
   String get actionFeed => '간식 주기';
 
   @override
@@ -180,4 +183,184 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get chatInputHint => '메시지를 입력하세요...';
+
+  @override
+  String get chatEmptyHint => 'AI와 대화를 시작해보세요';
+
+  @override
+  String get clearHistory => '대화 기록 삭제';
+
+  @override
+  String get clearHistoryConfirm => '모든 대화 기록을 삭제하시겠습니까?';
+
+  @override
+  String get cancel => '취소';
+
+  @override
+  String get clear => '삭제';
+
+  @override
+  String get retry => '다시 시도';
+
+  @override
+  String get aiThinking => '생각 중...';
+
+  @override
+  String get modelSelectionTitle => 'AI 모델 선택';
+
+  @override
+  String get modelSelectionDescription => '사용할 AI 모델을 선택하세요';
+
+  @override
+  String get noModelsFound => '사용 가능한 모델이 없습니다';
+
+  @override
+  String get noModelsDescription => 'AiModels 폴더에 GGUF 모델 파일을 추가해주세요';
+
+  @override
+  String get currentModel => '현재 모델';
+
+  @override
+  String get selectModel => '선택';
+
+  @override
+  String get modelSelected => '모델이 선택되었습니다';
+
+  @override
+  String get modelSelectionFailed => '모델 선택에 실패했습니다';
+
+  @override
+  String get permissionRequired => '저장소 권한이 필요합니다';
+
+  @override
+  String get requestPermission => '권한 요청';
+
+  @override
+  String get openSettings => '설정 열기';
+
+  @override
+  String get refreshModels => '새로고침';
+
+  @override
+  String get modelDebugTitle => 'AI 디버그 정보';
+
+  @override
+  String get debugRefresh => '새로고침';
+
+  @override
+  String get debugInitStatus => 'AI 초기화 상태';
+
+  @override
+  String get debugModelInfo => '현재 모델 정보';
+
+  @override
+  String get debugFFIStatus => 'FFI 연결 상태';
+
+  @override
+  String get debugSystemInfo => '시스템 정보';
+
+  @override
+  String get debugEngineStatus => '추론 엔진 상태';
+
+  @override
+  String get debugLogs => '디버그 로그';
+
+  @override
+  String get copyLogs => '로그 복사';
+
+  @override
+  String get logsCopied => '로그가 클립보드에 복사되었습니다';
+
+  @override
+  String get settingsTitle => '설정';
+
+  @override
+  String get settingsAiSection => 'AI 설정';
+
+  @override
+  String get settingsModelSelection => 'AI 모델 선택';
+
+  @override
+  String get settingsModelSelectionDescription => '사용할 AI 모델을 선택하세요';
+
+  @override
+  String get settingsModelDebug => 'AI 디버그 정보';
+
+  @override
+  String get settingsModelDebugDescription => 'AI 모델 상태 및 디버그 정보 확인';
+
+  @override
+  String get settingsAboutSection => '정보';
+
+  @override
+  String get settingsAbout => '앱 정보';
+
+  @override
+  String get settingsAboutDescription =>
+      'PokiFairy는 포켓 페어리 컴패니언과 AI 어시스턴트가 결합된 앱입니다.';
+
+  @override
+  String get errorModelNotFound => '사용 가능한 AI 모델이 없습니다. 모델을 다운로드해주세요.';
+
+  @override
+  String get errorModelLoadFailed => 'AI 모델을 불러오는데 실패했습니다. 모델 파일을 확인해주세요.';
+
+  @override
+  String get errorInference => 'AI 응답 생성 중 오류가 발생했습니다. 다시 시도해주세요.';
+
+  @override
+  String get errorPermissionDenied => '저장소 접근 권한이 필요합니다. 설정에서 권한을 허용해주세요.';
+
+  @override
+  String get errorInsufficientMemory => '메모리가 부족합니다. 다른 앱을 종료하고 다시 시도해주세요.';
+
+  @override
+  String get errorNetwork => '네트워크 연결을 확인해주세요.';
+
+  @override
+  String get errorUnknown => '알 수 없는 오류가 발생했습니다.';
+
+  @override
+  String get justNow => '방금 전';
+
+  @override
+  String minutesAgo(int minutes) {
+    return '$minutes분 전';
+  }
+
+  @override
+  String daysAgo(int days) {
+    return '$days일 전';
+  }
+
+  @override
+  String get permissionDialogTitle => '권한 필요';
+
+  @override
+  String get permissionDialogMessage =>
+      'AI 모델에 접근하기 위해 저장소 권한이 필요합니다. 권한을 허용해주세요.';
+
+  @override
+  String get permissionDialogCancel => '취소';
+
+  @override
+  String get permissionDialogAllow => '권한 허용';
+
+  @override
+  String get permissionSettingsTitle => '권한 설정 필요';
+
+  @override
+  String get permissionSettingsMessage => '권한이 거부되었습니다. 설정에서 권한을 허용해주세요.';
+
+  @override
+  String get sendMessage => '전송';
+
+  @override
+  String get noModelTitle => 'AI 모델이 없습니다';
+
+  @override
+  String get noModelDescription => 'AI와 대화하려면 먼저 모델을 선택해주세요.';
+
+  @override
+  String get goToModelSelection => '모델 선택하기';
 }

@@ -109,6 +109,10 @@
   "@homeQuickLinksTitle": {
     "description": "Home quick links section title"
   },
+  "homeAiChatButton": "Chat with AI",
+  "@homeAiChatButton": {
+    "description": "AI chat entry button"
+  },
   "actionFeed": "Share a snack",
   "@actionFeed": {
     "description": "Snack action button"
@@ -256,5 +260,247 @@
   "chatInputHint": "Type a message...",
   "@chatInputHint": {
     "description": "Chat input placeholder"
+  },
+  "chatEmptyHint": "Start a conversation with AI",
+  "@chatEmptyHint": {
+    "description": "Empty chat state hint"
+  },
+  "clearHistory": "Clear history",
+  "@clearHistory": {
+    "description": "Clear history button"
+  },
+  "clearHistoryConfirm": "Are you sure you want to clear all chat history?",
+  "@clearHistoryConfirm": {
+    "description": "Clear history confirmation message"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button"
+  },
+  "clear": "Clear",
+  "@clear": {
+    "description": "Clear button"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button"
+  },
+  "aiThinking": "Thinking...",
+  "@aiThinking": {
+    "description": "AI is responding"
+  },
+  "modelSelectionTitle": "Select AI Model",
+  "@modelSelectionTitle": {
+    "description": "Model selection page title"
+  },
+  "modelSelectionDescription": "Choose an AI model to use",
+  "@modelSelectionDescription": {
+    "description": "Model selection page description"
+  },
+  "noModelsFound": "No models available",
+  "@noModelsFound": {
+    "description": "No models message"
+  },
+  "noModelsDescription": "Please add GGUF model files to the AiModels folder",
+  "@noModelsDescription": {
+    "description": "No models description"
+  },
+  "currentModel": "Current Model",
+  "@currentModel": {
+    "description": "Current selected model label"
+  },
+  "selectModel": "Select",
+  "@selectModel": {
+    "description": "Select model button"
+  },
+  "modelSelected": "Model selected successfully",
+  "@modelSelected": {
+    "description": "Model selection success message"
+  },
+  "modelSelectionFailed": "Failed to select model",
+  "@modelSelectionFailed": {
+    "description": "Model selection failure message"
+  },
+  "permissionRequired": "Storage permission required",
+  "@permissionRequired": {
+    "description": "Permission required message"
+  },
+  "requestPermission": "Request Permission",
+  "@requestPermission": {
+    "description": "Request permission button"
+  },
+  "openSettings": "Open Settings",
+  "@openSettings": {
+    "description": "Open settings button"
+  },
+  "refreshModels": "Refresh",
+  "@refreshModels": {
+    "description": "Refresh models list button"
+  },
+  "modelDebugTitle": "AI Debug Info",
+  "@modelDebugTitle": {
+    "description": "Model debug page title"
+  },
+  "debugRefresh": "Refresh",
+  "@debugRefresh": {
+    "description": "Refresh debug info"
+  },
+  "debugInitStatus": "AI Initialization Status",
+  "@debugInitStatus": {
+    "description": "Initialization status section title"
+  },
+  "debugModelInfo": "Current Model Info",
+  "@debugModelInfo": {
+    "description": "Model info section title"
+  },
+  "debugFFIStatus": "FFI Connection Status",
+  "@debugFFIStatus": {
+    "description": "FFI status section title"
+  },
+  "debugSystemInfo": "System Information",
+  "@debugSystemInfo": {
+    "description": "System info section title"
+  },
+  "debugEngineStatus": "Inference Engine Status",
+  "@debugEngineStatus": {
+    "description": "Engine status section title"
+  },
+  "debugLogs": "Debug Logs",
+  "@debugLogs": {
+    "description": "Debug logs section title"
+  },
+  "copyLogs": "Copy Logs",
+  "@copyLogs": {
+    "description": "Copy logs button"
+  },
+  "logsCopied": "Logs copied to clipboard",
+  "@logsCopied": {
+    "description": "Logs copied success message"
+  },
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Settings page title"
+  },
+  "settingsAiSection": "AI Settings",
+  "@settingsAiSection": {
+    "description": "AI settings section title"
+  },
+  "settingsModelSelection": "Select AI Model",
+  "@settingsModelSelection": {
+    "description": "Model selection menu"
+  },
+  "settingsModelSelectionDescription": "Choose an AI model to use",
+  "@settingsModelSelectionDescription": {
+    "description": "Model selection menu description"
+  },
+  "settingsModelDebug": "AI Debug Info",
+  "@settingsModelDebug": {
+    "description": "Debug info menu"
+  },
+  "settingsModelDebugDescription": "View AI model status and debug information",
+  "@settingsModelDebugDescription": {
+    "description": "Debug info menu description"
+  },
+  "settingsAboutSection": "About",
+  "@settingsAboutSection": {
+    "description": "About section title"
+  },
+  "settingsAbout": "About App",
+  "@settingsAbout": {
+    "description": "About app menu"
+  },
+  "settingsAboutDescription": "PokiFairy combines a pocket fairy companion with an AI assistant.",
+  "@settingsAboutDescription": {
+    "description": "About app description"
+  },
+  "errorModelNotFound": "No AI model available. Please download a model.",
+  "@errorModelNotFound": {
+    "description": "Model not found error message"
+  },
+  "errorModelLoadFailed": "Failed to load AI model. Please check the model file.",
+  "@errorModelLoadFailed": {
+    "description": "Model load failed error message"
+  },
+  "errorInference": "Error occurred while generating AI response. Please try again.",
+  "@errorInference": {
+    "description": "Inference error message"
+  },
+  "errorPermissionDenied": "Storage permission required. Please allow permission in settings.",
+  "@errorPermissionDenied": {
+    "description": "Permission denied error message"
+  },
+  "errorInsufficientMemory": "Insufficient memory. Please close other apps and try again.",
+  "@errorInsufficientMemory": {
+    "description": "Insufficient memory error message"
+  },
+  "errorNetwork": "Please check your network connection.",
+  "@errorNetwork": {
+    "description": "Network error message"
+  },
+  "errorUnknown": "An unknown error occurred.",
+  "@errorUnknown": {
+    "description": "Unknown error message"
+  },
+  "justNow": "Just now",
+  "@justNow": {
+    "description": "Timestamp for messages sent just now"
+  },
+  "minutesAgo": "{minutes} min ago",
+  "@minutesAgo": {
+    "description": "Timestamp for messages sent minutes ago",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{days} days ago",
+  "@daysAgo": {
+    "description": "Timestamp for messages sent days ago",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "permissionDialogTitle": "Permission Required",
+  "@permissionDialogTitle": {
+    "description": "Permission dialog title"
+  },
+  "permissionDialogMessage": "Storage permission is required to access AI models. Please allow permission.",
+  "@permissionDialogMessage": {
+    "description": "Permission dialog message"
+  },
+  "permissionDialogCancel": "Cancel",
+  "@permissionDialogCancel": {
+    "description": "Permission dialog cancel button"
+  },
+  "permissionDialogAllow": "Allow Permission",
+  "@permissionDialogAllow": {
+    "description": "Permission dialog allow button"
+  },
+  "permissionSettingsTitle": "Permission Settings Required",
+  "@permissionSettingsTitle": {
+    "description": "Permission settings dialog title"
+  },
+  "permissionSettingsMessage": "Permission was denied. Please allow permission in settings.",
+  "@permissionSettingsMessage": {
+    "description": "Permission settings dialog message"
+  },
+  "sendMessage": "Send",
+  "@sendMessage": {
+    "description": "Send message button"
+  },
+  "noModelTitle": "No AI Model",
+  "@noModelTitle": {
+    "description": "No model title"
+  },
+  "noModelDescription": "Please select a model first to chat with AI.",
+  "@noModelDescription": {
+    "description": "No model description"
+  },
+  "goToModelSelection": "Select Model",
+  "@goToModelSelection": {
+    "description": "Go to model selection button"
   }
 }

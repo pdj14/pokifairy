@@ -2,7 +2,7 @@
 description: "Pocket fairy companion app scaffold with Riverpod, GoRouter, and localized UI."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
   sdk: ^3.9.0
@@ -20,12 +20,20 @@ dependencies:
   intl: ^0.20.2
   google_fonts: ^6.2.1
   flame: ^1.16.0
+  # AI-related dependencies from OurSecretBase
+  http: ^1.1.0
+  path_provider: ^2.1.1
+  ffi: ^2.1.0
+  path: ^1.8.3
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.13.1
+  integration_test:
+    sdk: flutter
 
 flutter_launcher_icons:
   image_path: assets/images/PockiFairy.png

@@ -22,7 +22,13 @@ class HomePage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.appTitle),
-        actions: [],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => context.push(AppRoute.settings.path),
+            tooltip: l10n.settingsTitle,
+          ),
+        ],
       ),
       body: SafeArea(
         child: Padding(
@@ -212,6 +218,13 @@ class _FairyDisplay extends ConsumerWidget {
               ],
             ),
           ),
+        ),
+        const SizedBox(height: 24),
+        // AI 채팅 진입점
+        PrimaryButton(
+          label: l10n.homeAiChatButton,
+          icon: const Icon(Icons.chat_bubble_outline),
+          onPressed: () => context.go(AppRoute.chat.path),
         ),
       ],
     );

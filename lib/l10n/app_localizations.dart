@@ -242,6 +242,12 @@ abstract class AppLocalizations {
   /// **'빠른 이동'**
   String get homeQuickLinksTitle;
 
+  /// AI 채팅 진입 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'AI와 대화하기'**
+  String get homeAiChatButton;
+
   /// 간식 액션 버튼
   ///
   /// In ko, this message translates to:
@@ -403,6 +409,354 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'메시지를 입력하세요...'**
   String get chatInputHint;
+
+  /// 빈 채팅 상태 힌트
+  ///
+  /// In ko, this message translates to:
+  /// **'AI와 대화를 시작해보세요'**
+  String get chatEmptyHint;
+
+  /// 대화 기록 삭제 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'대화 기록 삭제'**
+  String get clearHistory;
+
+  /// 대화 기록 삭제 확인 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'모든 대화 기록을 삭제하시겠습니까?'**
+  String get clearHistoryConfirm;
+
+  /// 취소 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'취소'**
+  String get cancel;
+
+  /// 삭제 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제'**
+  String get clear;
+
+  /// 재시도 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 시도'**
+  String get retry;
+
+  /// AI 응답 대기 중
+  ///
+  /// In ko, this message translates to:
+  /// **'생각 중...'**
+  String get aiThinking;
+
+  /// 모델 선택 페이지 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 모델 선택'**
+  String get modelSelectionTitle;
+
+  /// 모델 선택 페이지 설명
+  ///
+  /// In ko, this message translates to:
+  /// **'사용할 AI 모델을 선택하세요'**
+  String get modelSelectionDescription;
+
+  /// 모델 없음 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'사용 가능한 모델이 없습니다'**
+  String get noModelsFound;
+
+  /// 모델 없음 설명
+  ///
+  /// In ko, this message translates to:
+  /// **'AiModels 폴더에 GGUF 모델 파일을 추가해주세요'**
+  String get noModelsDescription;
+
+  /// 현재 선택된 모델 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 모델'**
+  String get currentModel;
+
+  /// 모델 선택 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'선택'**
+  String get selectModel;
+
+  /// 모델 선택 성공 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'모델이 선택되었습니다'**
+  String get modelSelected;
+
+  /// 모델 선택 실패 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'모델 선택에 실패했습니다'**
+  String get modelSelectionFailed;
+
+  /// 권한 필요 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'저장소 권한이 필요합니다'**
+  String get permissionRequired;
+
+  /// 권한 요청 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'권한 요청'**
+  String get requestPermission;
+
+  /// 설정 열기 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 열기'**
+  String get openSettings;
+
+  /// 모델 목록 새로고침 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'새로고침'**
+  String get refreshModels;
+
+  /// 모델 디버그 페이지 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 디버그 정보'**
+  String get modelDebugTitle;
+
+  /// 디버그 정보 새로고침
+  ///
+  /// In ko, this message translates to:
+  /// **'새로고침'**
+  String get debugRefresh;
+
+  /// 초기화 상태 섹션 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 초기화 상태'**
+  String get debugInitStatus;
+
+  /// 모델 정보 섹션 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 모델 정보'**
+  String get debugModelInfo;
+
+  /// FFI 상태 섹션 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'FFI 연결 상태'**
+  String get debugFFIStatus;
+
+  /// 시스템 정보 섹션 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'시스템 정보'**
+  String get debugSystemInfo;
+
+  /// 엔진 상태 섹션 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'추론 엔진 상태'**
+  String get debugEngineStatus;
+
+  /// 디버그 로그 섹션 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'디버그 로그'**
+  String get debugLogs;
+
+  /// 로그 복사 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'로그 복사'**
+  String get copyLogs;
+
+  /// 로그 복사 완료 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'로그가 클립보드에 복사되었습니다'**
+  String get logsCopied;
+
+  /// 설정 페이지 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'설정'**
+  String get settingsTitle;
+
+  /// AI 설정 섹션 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 설정'**
+  String get settingsAiSection;
+
+  /// 모델 선택 메뉴
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 모델 선택'**
+  String get settingsModelSelection;
+
+  /// 모델 선택 메뉴 설명
+  ///
+  /// In ko, this message translates to:
+  /// **'사용할 AI 모델을 선택하세요'**
+  String get settingsModelSelectionDescription;
+
+  /// 디버그 정보 메뉴
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 디버그 정보'**
+  String get settingsModelDebug;
+
+  /// 디버그 정보 메뉴 설명
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 모델 상태 및 디버그 정보 확인'**
+  String get settingsModelDebugDescription;
+
+  /// 정보 섹션 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'정보'**
+  String get settingsAboutSection;
+
+  /// 앱 정보 메뉴
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 정보'**
+  String get settingsAbout;
+
+  /// 앱 정보 설명
+  ///
+  /// In ko, this message translates to:
+  /// **'PokiFairy는 포켓 페어리 컴패니언과 AI 어시스턴트가 결합된 앱입니다.'**
+  String get settingsAboutDescription;
+
+  /// 모델 없음 에러 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'사용 가능한 AI 모델이 없습니다. 모델을 다운로드해주세요.'**
+  String get errorModelNotFound;
+
+  /// 모델 로드 실패 에러 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 모델을 불러오는데 실패했습니다. 모델 파일을 확인해주세요.'**
+  String get errorModelLoadFailed;
+
+  /// 추론 에러 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 응답 생성 중 오류가 발생했습니다. 다시 시도해주세요.'**
+  String get errorInference;
+
+  /// 권한 거부 에러 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'저장소 접근 권한이 필요합니다. 설정에서 권한을 허용해주세요.'**
+  String get errorPermissionDenied;
+
+  /// 메모리 부족 에러 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'메모리가 부족합니다. 다른 앱을 종료하고 다시 시도해주세요.'**
+  String get errorInsufficientMemory;
+
+  /// 네트워크 에러 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'네트워크 연결을 확인해주세요.'**
+  String get errorNetwork;
+
+  /// 알 수 없는 에러 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'알 수 없는 오류가 발생했습니다.'**
+  String get errorUnknown;
+
+  /// 방금 전 메시지 타임스탬프
+  ///
+  /// In ko, this message translates to:
+  /// **'방금 전'**
+  String get justNow;
+
+  /// 분 단위 타임스탬프
+  ///
+  /// In ko, this message translates to:
+  /// **'{minutes}분 전'**
+  String minutesAgo(int minutes);
+
+  /// 일 단위 타임스탬프
+  ///
+  /// In ko, this message translates to:
+  /// **'{days}일 전'**
+  String daysAgo(int days);
+
+  /// 권한 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'권한 필요'**
+  String get permissionDialogTitle;
+
+  /// 권한 다이얼로그 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 모델에 접근하기 위해 저장소 권한이 필요합니다. 권한을 허용해주세요.'**
+  String get permissionDialogMessage;
+
+  /// 권한 다이얼로그 취소 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'취소'**
+  String get permissionDialogCancel;
+
+  /// 권한 다이얼로그 허용 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'권한 허용'**
+  String get permissionDialogAllow;
+
+  /// 권한 설정 다이얼로그 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'권한 설정 필요'**
+  String get permissionSettingsTitle;
+
+  /// 권한 설정 다이얼로그 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'권한이 거부되었습니다. 설정에서 권한을 허용해주세요.'**
+  String get permissionSettingsMessage;
+
+  /// 메시지 전송 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'전송'**
+  String get sendMessage;
+
+  /// 모델 없음 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 모델이 없습니다'**
+  String get noModelTitle;
+
+  /// 모델 없음 설명
+  ///
+  /// In ko, this message translates to:
+  /// **'AI와 대화하려면 먼저 모델을 선택해주세요.'**
+  String get noModelDescription;
+
+  /// 모델 선택 화면으로 이동 버튼
+  ///
+  /// In ko, this message translates to:
+  /// **'모델 선택하기'**
+  String get goToModelSelection;
 }
 
 class _AppLocalizationsDelegate

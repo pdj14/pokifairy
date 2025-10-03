@@ -45,5 +45,26 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>AI 모델 파일에 접근하기 위해 사진 라이브러리 권한이 필요합니다.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>AI 모델 파일을 저장하기 위해 사진 라이브러리 권한이 필요합니다.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>AI 모델 파일에 접근하기 위해 문서 폴더 권한이 필요합니다.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.pokifairy.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>pokifairy</string>
+			</array>
+		</dict>
+	</array>
+	<key>FlutterDeepLinkingEnabled</key>
+	<true/>
 </dict>
 </plist>

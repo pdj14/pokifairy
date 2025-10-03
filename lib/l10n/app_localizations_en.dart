@@ -91,6 +91,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeQuickLinksTitle => 'Quick links';
 
   @override
+  String get homeAiChatButton => 'Chat with AI';
+
+  @override
   String get actionFeed => 'Share a snack';
 
   @override
@@ -183,4 +186,194 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatInputHint => 'Type a message...';
+
+  @override
+  String get chatEmptyHint => 'Start a conversation with AI';
+
+  @override
+  String get clearHistory => 'Clear history';
+
+  @override
+  String get clearHistoryConfirm =>
+      'Are you sure you want to clear all chat history?';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get clear => 'Clear';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get aiThinking => 'Thinking...';
+
+  @override
+  String get modelSelectionTitle => 'Select AI Model';
+
+  @override
+  String get modelSelectionDescription => 'Choose an AI model to use';
+
+  @override
+  String get noModelsFound => 'No models available';
+
+  @override
+  String get noModelsDescription =>
+      'Please add GGUF model files to the AiModels folder';
+
+  @override
+  String get currentModel => 'Current Model';
+
+  @override
+  String get selectModel => 'Select';
+
+  @override
+  String get modelSelected => 'Model selected successfully';
+
+  @override
+  String get modelSelectionFailed => 'Failed to select model';
+
+  @override
+  String get permissionRequired => 'Storage permission required';
+
+  @override
+  String get requestPermission => 'Request Permission';
+
+  @override
+  String get openSettings => 'Open Settings';
+
+  @override
+  String get refreshModels => 'Refresh';
+
+  @override
+  String get modelDebugTitle => 'AI Debug Info';
+
+  @override
+  String get debugRefresh => 'Refresh';
+
+  @override
+  String get debugInitStatus => 'AI Initialization Status';
+
+  @override
+  String get debugModelInfo => 'Current Model Info';
+
+  @override
+  String get debugFFIStatus => 'FFI Connection Status';
+
+  @override
+  String get debugSystemInfo => 'System Information';
+
+  @override
+  String get debugEngineStatus => 'Inference Engine Status';
+
+  @override
+  String get debugLogs => 'Debug Logs';
+
+  @override
+  String get copyLogs => 'Copy Logs';
+
+  @override
+  String get logsCopied => 'Logs copied to clipboard';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsAiSection => 'AI Settings';
+
+  @override
+  String get settingsModelSelection => 'Select AI Model';
+
+  @override
+  String get settingsModelSelectionDescription => 'Choose an AI model to use';
+
+  @override
+  String get settingsModelDebug => 'AI Debug Info';
+
+  @override
+  String get settingsModelDebugDescription =>
+      'View AI model status and debug information';
+
+  @override
+  String get settingsAboutSection => 'About';
+
+  @override
+  String get settingsAbout => 'About App';
+
+  @override
+  String get settingsAboutDescription =>
+      'PokiFairy combines a pocket fairy companion with an AI assistant.';
+
+  @override
+  String get errorModelNotFound =>
+      'No AI model available. Please download a model.';
+
+  @override
+  String get errorModelLoadFailed =>
+      'Failed to load AI model. Please check the model file.';
+
+  @override
+  String get errorInference =>
+      'Error occurred while generating AI response. Please try again.';
+
+  @override
+  String get errorPermissionDenied =>
+      'Storage permission required. Please allow permission in settings.';
+
+  @override
+  String get errorInsufficientMemory =>
+      'Insufficient memory. Please close other apps and try again.';
+
+  @override
+  String get errorNetwork => 'Please check your network connection.';
+
+  @override
+  String get errorUnknown => 'An unknown error occurred.';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String minutesAgo(int minutes) {
+    return '$minutes min ago';
+  }
+
+  @override
+  String daysAgo(int days) {
+    return '$days days ago';
+  }
+
+  @override
+  String get permissionDialogTitle => 'Permission Required';
+
+  @override
+  String get permissionDialogMessage =>
+      'Storage permission is required to access AI models. Please allow permission.';
+
+  @override
+  String get permissionDialogCancel => 'Cancel';
+
+  @override
+  String get permissionDialogAllow => 'Allow Permission';
+
+  @override
+  String get permissionSettingsTitle => 'Permission Settings Required';
+
+  @override
+  String get permissionSettingsMessage =>
+      'Permission was denied. Please allow permission in settings.';
+
+  @override
+  String get sendMessage => 'Send';
+
+  @override
+  String get noModelTitle => 'No AI Model';
+
+  @override
+  String get noModelDescription =>
+      'Please select a model first to chat with AI.';
+
+  @override
+  String get goToModelSelection => 'Select Model';
 }

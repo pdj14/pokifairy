@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pokifairy/l10n/app_localizations.dart';
-import 'package:pokifairy/shared/model/chat_message.dart';
-import 'package:pokifairy/shared/providers/chat_providers.dart';
+import 'package:pokifairy/features/chat/providers/chat_providers.dart';
+import 'package:pokifairy/features/chat/widgets/message_bubble.dart';
+import 'package:pokifairy/features/chat/widgets/chat_input.dart';
+import 'package:pokifairy/features/chat/widgets/typing_indicator.dart';
+import 'package:pokifairy/features/chat/widgets/ai_loading_indicator.dart';
+import 'package:pokifairy/shared/model/ai_message.dart';
+import 'package:pokifairy/shared/providers/ai_providers.dart';
 import 'package:pokifairy/shared/providers/fairy_providers.dart';
-import 'package:pokifairy/shared/utils/color_utils.dart';
+import 'package:pokifairy/app/app_router.dart';
 
-/// 요정과 채팅하는 화면
+/// AI와 채팅하는 화면
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({super.key});
 
@@ -15,32 +21,31 @@ class ChatPage extends ConsumerStatefulWidget {
 }
 
 class _ChatPageState extends ConsumerState<ChatPage> {
-  late final TextEditingController _textController;
   late final ScrollController _scrollController;
-  final _textFieldKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
-    _textController = TextEditingController();
     _scrollController = ScrollController();
   }
 
   @override
   void dispose() {
-    _textController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _handleSendMessage() {
-    final text = _textController.text.trim();
-    if (text.isEmpty) return;
+  void _handleSendMessage(String text) async {
+    if (text.trim().isEmpty) return;
 
-    ref.read(chatProvider.notifier).addUserMessage(text);
-    _textController.clear();
+    // 메시지 전송
+    await ref.read(chatControllerProvider.notifier).sendMessage(text);
 
     // 메시지 전송 후 스크롤을 아래로
+    _scrollToBottom();
+  }
+
+  void _scrollToBottom() {
     Future.delayed(const Duration(milliseconds: 100), () {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
@@ -55,155 +60,136 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final messages = ref.watch(chatControllerProvider);
+    final loadingProgress = ref.watch(aiLoadingProgressProvider);
+    final theme = Theme.of(context);
+    
+    // AI 모델 정보 확인
+    final currentModelAsync = ref.watch(currentModelInfoProvider);
+    final aiService = ref.watch(aiServiceProvider);
+    
+    // 요정 정보 가져오기
     final fairy = ref.watch(fairyProvider);
-    final messages = ref.watch(chatProvider);
-    final accentColor = fairy != null ? colorFromHex(fairy.color) : Colors.blue;
+
+    // 메시지가 추가될 때마다 스크롤
+    ref.listen(chatControllerProvider, (previous, next) {
+      if (next.length > (previous?.length ?? 0)) {
+        _scrollToBottom();
+      }
+    });
+
+    // AI가 응답 중인지 확인
+    final isAiResponding = messages.isNotEmpty && 
+        messages.last.status == MessageStatus.sending &&
+        !messages.last.isUser;
+    
+    // AI 모델 로딩 중인지 확인
+    final isAiLoading = loadingProgress.progress > 0.0 && !loadingProgress.isComplete;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.chatTitle),
-        backgroundColor: accentColor.withOpacity(0.1),
-      ),
-      body: Column(
-        children: [
-          // 상단: 요정 이미지와 말풍선 영역
-          _FairyDisplayArea(
-            fairy: fairy,
-            accentColor: accentColor,
-            lastMessage: messages.isNotEmpty && !messages.last.isUser
-                ? messages.last.text
-                : null,
+        title: Text(fairy?.name ?? l10n.chatTitle),
+        actions: [
+          // 모델 변경 버튼
+          IconButton(
+            icon: const Icon(Icons.settings_suggest),
+            tooltip: 'Change AI Model',
+            onPressed: () {
+              context.push(AppRoute.modelSelection.path);
+            },
           ),
-          
-          const Divider(height: 1),
-          
-          // 중간: 채팅 메시지 리스트
-          Expanded(
-            child: messages.isEmpty
-                ? _EmptyChatState(l10n: l10n)
-                : ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      final message = messages[index];
-                      return _MessageBubble(
-                        message: message,
-                        accentColor: accentColor,
-                      );
-                    },
-                  ),
-          ),
-          
-          const Divider(height: 1),
-          
-          // 하단: 입력창
-          _ChatInputArea(
-            key: _textFieldKey,
-            controller: _textController,
-            onSend: _handleSendMessage,
-            accentColor: accentColor,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// 요정 이미지와 말풍선 표시 영역
-class _FairyDisplayArea extends StatelessWidget {
-  const _FairyDisplayArea({
-    required this.fairy,
-    required this.accentColor,
-    this.lastMessage,
-  });
-
-  final dynamic fairy;
-  final Color accentColor;
-  final String? lastMessage;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            accentColor.withOpacity(0.15),
-            accentColor.withOpacity(0.05),
-          ],
-        ),
-      ),
-      child: Column(
-        children: [
-          // 요정 이미지
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              boxShadow: [
-                BoxShadow(
-                  color: accentColor.withOpacity(0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: fairy != null
-                  ? Image.asset(
-                      'assets/images/PockiFairy.png',
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey.shade200,
-                          child: Icon(
-                            Icons.auto_awesome,
-                            size: 50,
-                            color: accentColor,
-                          ),
-                        );
-                      },
-                    )
-                  : Container(
-                      color: Colors.grey.shade200,
-                      child: Icon(
-                        Icons.auto_awesome,
-                        size: 50,
-                        color: accentColor,
+          if (messages.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () async {
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text(l10n.clearHistory),
+                    content: Text(l10n.clearHistoryConfirm),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: Text(l10n.cancel),
                       ),
-                    ),
-            ),
-          ),
-          
-          if (lastMessage != null) ...[
-            const SizedBox(height: 16),
-            // 말풍선
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+                      FilledButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: Text(l10n.clear),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: Text(
-                lastMessage!,
-                style: Theme.of(context).textTheme.bodyLarge,
-                textAlign: TextAlign.center,
-              ),
+                );
+                
+                if (confirmed == true) {
+                  await ref.read(chatControllerProvider.notifier).clearHistory();
+                }
+              },
+              tooltip: l10n.clearHistory,
             ),
-          ],
         ],
+      ),
+      body: currentModelAsync.when(
+        data: (currentModel) {
+          // 모델이 선택되지 않은 경우만 "모델 없음" 표시
+          if (currentModel == null) {
+            return _NoModelState(l10n: l10n);
+          }
+          
+          // 모델은 선택되어 있지만 AI 서비스가 초기화되지 않은 경우
+          // (Lazy loading: 첫 메시지 전송 시 초기화됨)
+          
+          // 정상 채팅 UI
+          return Column(
+            children: [
+              // AI 로딩 진행률 표시
+              if (isAiLoading) const AiLoadingIndicator(),
+              
+              // 채팅 메시지 리스트
+              Expanded(
+                child: messages.isEmpty
+                    ? _EmptyChatState(l10n: l10n)
+                    : ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.all(16),
+                        itemCount: messages.length + (isAiResponding ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          // 타이핑 인디케이터 표시
+                          if (index == messages.length && isAiResponding) {
+                            return const Padding(
+                              key: ValueKey('typing_indicator'),
+                              padding: EdgeInsets.only(bottom: 12),
+                              child: TypingIndicator(),
+                            );
+                          }
+                          
+                          final message = messages[index];
+                          return RepaintBoundary(
+                            key: ValueKey('repaint_${message.id}'),
+                            child: MessageBubble(
+                              key: ValueKey(message.id),
+                              message: message,
+                              onRetry: message.status == MessageStatus.error
+                                  ? () => ref.read(chatControllerProvider.notifier)
+                                      .retryMessage(message.id)
+                                  : null,
+                            ),
+                          );
+                        },
+                      ),
+              ),
+              
+              const Divider(height: 1),
+              
+              // 입력창
+              ChatInput(
+                onSend: _handleSendMessage,
+                enabled: !isAiResponding && !isAiLoading,
+              ),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => _NoModelState(l10n: l10n),
       ),
     );
   }
@@ -217,180 +203,87 @@ class _EmptyChatState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.chat_bubble_outline,
-            size: 64,
-            color: Colors.grey.shade300,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            l10n.chatEmptyMessage,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.grey.shade600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// 메시지 버블
-class _MessageBubble extends StatelessWidget {
-  const _MessageBubble({
-    required this.message,
-    required this.accentColor,
-  });
-
-  final ChatMessage message;
-  final Color accentColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        mainAxisAlignment:
-            message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!message.isUser) ...[
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: accentColor.withOpacity(0.2),
-              child: Icon(
-                Icons.auto_awesome,
-                size: 16,
-                color: accentColor,
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: message.isUser
-                    ? const Color(0xFF5B9BD5)
-                    : Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                message.text,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: message.isUser ? Colors.white : Colors.black87,
-                  fontWeight: message.isUser ? FontWeight.w500 : FontWeight.normal,
-                ),
-              ),
-            ),
-          ),
-          if (message.isUser) ...[
-            const SizedBox(width: 8),
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.grey.shade300,
-              child: Icon(
-                Icons.person,
-                size: 16,
-                color: Colors.grey.shade700,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-/// 채팅 입력 영역
-class _ChatInputArea extends StatefulWidget {
-  const _ChatInputArea({
-    super.key,
-    required this.controller,
-    required this.onSend,
-    required this.accentColor,
-  });
-
-  final TextEditingController controller;
-  final VoidCallback onSend;
-  final Color accentColor;
-
-  @override
-  State<_ChatInputArea> createState() => _ChatInputAreaState();
-}
-
-class _ChatInputAreaState extends State<_ChatInputArea> {
-  final _inputKey = const ValueKey('chat_input_field');
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-              child: TextField(
-                key: _inputKey,
-                controller: widget.controller,
-                decoration: InputDecoration(
-                  hintText: l10n.chatInputHint,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey.shade100,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
-                ),
-                maxLines: 5,
-                minLines: 1,
-                textCapitalization: TextCapitalization.sentences,
-                onSubmitted: (_) => widget.onSend(),
-                autofocus: false,
-                enableIMEPersonalizedLearning: true,
-              ),
+            Icon(
+              Icons.chat_bubble_outline,
+              size: 80,
+              color: theme.colorScheme.primary.withOpacity(0.3),
             ),
-            const SizedBox(width: 8),
-            Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF5B9BD5),
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF5B9BD5).withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+            const SizedBox(height: 24),
+            Text(
+              l10n.chatEmptyMessage,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.6),
               ),
-              child: IconButton(
-                onPressed: widget.onSend,
-                icon: const Icon(Icons.send, color: Colors.white),
-                iconSize: 24,
-                padding: const EdgeInsets.all(12),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.chatEmptyHint,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.4),
               ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 모델 없음 상태
+class _NoModelState extends StatelessWidget {
+  const _NoModelState({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.smart_toy_outlined,
+              size: 80,
+              color: theme.colorScheme.primary.withOpacity(0.3),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              l10n.noModelTitle,
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              l10n.noModelDescription,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.6),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            FilledButton.icon(
+              onPressed: () {
+                context.go(AppRoute.modelSelection.path);
+              },
+              icon: const Icon(Icons.download),
+              label: Text(l10n.goToModelSelection),
             ),
           ],
         ),
