@@ -45,6 +45,11 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
     if (createdFairy != null) {
       ref.read(careLogProvider.notifier).clear();
+      
+      // Provider들을 강제로 갱신
+      ref.invalidate(allFairiesProvider);
+      ref.invalidate(fairiesListProvider);
+      
       context.go(AppRoute.landing.path);
     } else {
       final error = ref
@@ -59,21 +64,19 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final fairy = ref.watch(fairyProvider);
     final l10n = AppLocalizations.of(context)!;
-
-    if (fairy != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) {
-          context.go(AppRoute.landing.path);
-        }
-      });
-    }
 
     final isLoading = ref.watch(fairyControllerProvider).isLoading;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.setupTitle)),
+      appBar: AppBar(
+        title: Text(l10n.setupTitle),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go(AppRoute.landing.path),
+          tooltip: '뒤로가기',
+        ),
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -129,7 +132,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                     onFieldSubmitted: (_) => _submit(),
                   ),
                   const SizedBox(height: 24),
-                  const SizedBox(height: 24),
                   PrimaryButton(
                     label: l10n.setupCreateButton,
                     tooltip: l10n.setupCreateButton,
@@ -142,6 +144,15 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.auto_awesome),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: isLoading ? null : () => context.go(AppRoute.landing.path),
+                    icon: const Icon(Icons.close),
+                    label: Text(l10n.dialogButtonCancel),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
                   ),
                 ],
               ),

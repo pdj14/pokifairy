@@ -24,8 +24,8 @@ class _FairySelectionWidgetState extends State<FairySelectionWidget> {
   static const List<String> fairyAssets = [
     'character/fairy1.png',
     'character/fairy2.png',
-    // 'character/fairy3.png',
-    // 'character/fairy4.png',
+    'character/fairy3.png',
+    'character/fairy4.png',
     // 'character/fairy5.png',
     // 'character/fairy6.png',
     // 'character/fairy7.png',
@@ -35,6 +35,8 @@ class _FairySelectionWidgetState extends State<FairySelectionWidget> {
   static const Map<int, String> _talkAssetByIndex = {
     0: 'character/talk/fairy1_talk.png',
     1: 'character/talk/fairy2_talk.png',
+    2: 'character/talk/fairy3_talk.png',
+    3: 'character/talk/fairy4_talk.png',
   };
 
   static const int _talkSheetColumns = 4;

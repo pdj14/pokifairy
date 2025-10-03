@@ -171,4 +171,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get landingDeletedMessage => '요정을 떠나보냈어요. 새로운 친구를 다시 맞이해 주세요.';
+
+  @override
+  String get chatTitle => '요정과 대화하기';
+
+  @override
+  String get chatEmptyMessage => '요정과 대화를 시작해보세요!';
+
+  @override
+  String get chatInputHint => '메시지를 입력하세요...';
 }

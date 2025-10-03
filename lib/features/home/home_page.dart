@@ -29,44 +29,12 @@ class HomePage extends ConsumerWidget {
           padding: const EdgeInsets.all(20),
           child: fairy == null
               ? _EmptyState(onCreate: () => context.push(AppRoute.onboarding.path))
-              : _FairyDisplay(
-                  fairy: fairy,
-                  onDelete: () => _confirmDelete(context, ref),
-                ),
+              : _FairyDisplay(fairy: fairy),
         ),
       ),
     );
   }
 
-  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.landingDeleteDialogTitle),
-        content: Text(l10n.landingDeleteDialogMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(l10n.dialogButtonCancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text('삭제'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      await ref.read(fairyControllerProvider.notifier).resetFairy();
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.landingDeletedMessage)),
-        );
-      }
-    }
-  }
 }
 
 class _EmptyState extends StatelessWidget {
@@ -117,11 +85,9 @@ class _FairyDisplay extends ConsumerWidget {
   const _FairyDisplay({
     super.key,
     required this.fairy,
-    required this.onDelete,
   });
 
   final Fairy fairy;
-  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -244,20 +210,6 @@ class _FairyDisplay extends ConsumerWidget {
                   ],
                 ),
               ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 32),
-        ElevatedButton.icon(
-          onPressed: onDelete,
-          icon: const Icon(Icons.delete_outline),
-          label: const Text('요정 삭제'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red.shade400,
-            foregroundColor: Colors.white,
-            minimumSize: const Size.fromHeight(48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
             ),
           ),
         ),

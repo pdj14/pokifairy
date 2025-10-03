@@ -9,6 +9,8 @@ class PrefsService {
   const PrefsService(this._prefs);
 
   static const String _fairyKey = 'pf_fairy_json';
+  static const String _fairiesKey = 'pf_fairies_json';
+  static const String _activeFairyIdKey = 'pf_active_fairy_id';
   static const String _lastOpenedKey = 'pf_last_opened_at';
 
   final SharedPreferences _prefs;
@@ -47,5 +49,51 @@ class PrefsService {
       return null;
     }
     return DateTime.tryParse(raw);
+  }
+
+  /// Loads all saved fairies as a map of ID to Fairy.
+  Future<Map<String, Fairy>> loadAllFairies() async {
+    final raw = _prefs.getString(_fairiesKey);
+    if (raw == null) {
+      return {};
+    }
+    final decoded = jsonDecode(raw) as Map<String, Object?>;
+    final result = <String, Fairy>{};
+    for (final entry in decoded.entries) {
+      result[entry.key] = Fairy.fromJson(entry.value as Map<String, Object?>);
+    }
+    return result;
+  }
+
+  /// Saves all fairies to storage.
+  Future<void> saveAllFairies(Map<String, Fairy> fairies) async {
+    final encoded = <String, Object?>{};
+    for (final entry in fairies.entries) {
+      encoded[entry.key] = entry.value.toJson();
+    }
+    await _prefs.setString(_fairiesKey, jsonEncode(encoded));
+  }
+
+  /// Loads the currently active fairy ID.
+  Future<String?> loadActiveFairyId() async {
+    return _prefs.getString(_activeFairyIdKey);
+  }
+
+  /// Saves the currently active fairy ID.
+  Future<void> saveActiveFairyId(String id) async {
+    await _prefs.setString(_activeFairyIdKey, id);
+  }
+
+  /// Removes a specific fairy by ID.
+  Future<void> removeFairy(String id) async {
+    final fairies = await loadAllFairies();
+    fairies.remove(id);
+    await saveAllFairies(fairies);
+    
+    // If this was the active fairy, clear the active ID
+    final activeId = await loadActiveFairyId();
+    if (activeId == id) {
+      await _prefs.remove(_activeFairyIdKey);
+    }
   }
 }

@@ -1,11 +1,12 @@
 ﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pokifairy/features/chat/chat_page.dart';
 import 'package:pokifairy/features/home/home_page.dart';
 import 'package:pokifairy/features/landing/landing_page.dart';
 import 'package:pokifairy/features/onboarding/onboarding_page.dart';
 
 /// 앱 경로 정의.
-enum AppRoute { root, landing, onboarding, home }
+enum AppRoute { root, landing, onboarding, home, chat }
 
 extension AppRoutePath on AppRoute {
   String get path => switch (this) {
@@ -13,6 +14,7 @@ extension AppRoutePath on AppRoute {
         AppRoute.landing => '/',
         AppRoute.onboarding => '/onboarding',
         AppRoute.home => '/home',
+        AppRoute.chat => '/chat',
       };
 
   String get name => switch (this) {
@@ -20,6 +22,7 @@ extension AppRoutePath on AppRoute {
         AppRoute.landing => 'landing',
         AppRoute.onboarding => 'onboarding',
         AppRoute.home => 'home',
+        AppRoute.chat => 'chat',
       };
 }
 
@@ -42,6 +45,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoute.home.path,
         name: AppRoute.home.name,
         builder: (context, state) => const HomePage(),
+      ),
+      GoRoute(
+        path: AppRoute.chat.path,
+        name: AppRoute.chat.name,
+        builder: (context, state) => const ChatPage(),
       ),
     ],
   );

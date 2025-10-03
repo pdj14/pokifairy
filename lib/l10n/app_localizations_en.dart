@@ -174,4 +174,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get landingDeletedMessage =>
       'Your fairy has been released. Create a new friend anytime!';
+
+  @override
+  String get chatTitle => 'Chat with Fairy';
+
+  @override
+  String get chatEmptyMessage => 'Start a conversation with your fairy!';
+
+  @override
+  String get chatInputHint => 'Type a message...';
 }

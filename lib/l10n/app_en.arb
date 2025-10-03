@@ -244,5 +244,17 @@
   "landingDeletedMessage": "Your fairy has been released. Create a new friend anytime!",
   "@landingDeletedMessage": {
     "description": "Landing delete snackbar"
+  },
+  "chatTitle": "Chat with Fairy",
+  "@chatTitle": {
+    "description": "Chat page title"
+  },
+  "chatEmptyMessage": "Start a conversation with your fairy!",
+  "@chatEmptyMessage": {
+    "description": "Empty chat state message"
+  },
+  "chatInputHint": "Type a message...",
+  "@chatInputHint": {
+    "description": "Chat input placeholder"
   }
 }

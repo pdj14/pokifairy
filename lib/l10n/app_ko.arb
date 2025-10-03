@@ -256,5 +256,17 @@
   "landingDeletedMessage": "요정을 떠나보냈어요. 새로운 친구를 다시 맞이해 주세요.",
   "@landingDeletedMessage": {
     "description": "삭제 완료 스낵바 메시지"
+  },
+  "chatTitle": "요정과 대화하기",
+  "@chatTitle": {
+    "description": "채팅 페이지 제목"
+  },
+  "chatEmptyMessage": "요정과 대화를 시작해보세요!",
+  "@chatEmptyMessage": {
+    "description": "빈 채팅 상태 메시지"
+  },
+  "chatInputHint": "메시지를 입력하세요...",
+  "@chatInputHint": {
+    "description": "채팅 입력 힌트"
   }
 }

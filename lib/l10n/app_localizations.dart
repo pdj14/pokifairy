@@ -385,6 +385,24 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'요정을 떠나보냈어요. 새로운 친구를 다시 맞이해 주세요.'**
   String get landingDeletedMessage;
+
+  /// 채팅 페이지 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'요정과 대화하기'**
+  String get chatTitle;
+
+  /// 빈 채팅 상태 메시지
+  ///
+  /// In ko, this message translates to:
+  /// **'요정과 대화를 시작해보세요!'**
+  String get chatEmptyMessage;
+
+  /// 채팅 입력 힌트
+  ///
+  /// In ko, this message translates to:
+  /// **'메시지를 입력하세요...'**
+  String get chatInputHint;
 }
 
 class _AppLocalizationsDelegate
