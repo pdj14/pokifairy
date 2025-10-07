@@ -109,29 +109,34 @@ class ModelCard extends StatelessWidget {
               ),
               
               // 모델 상세 정보
-              if (model.architecture != null || model.quantization != null) ...[
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    if (model.architecture != null)
-                      _buildInfoChip(
-                        context,
-                        icon: Icons.architecture,
-                        label: model.architecture!,
-                        isSelected: isSelected,
-                      ),
-                    if (model.quantization != null)
-                      _buildInfoChip(
-                        context,
-                        icon: Icons.compress,
-                        label: model.quantization!,
-                        isSelected: isSelected,
-                      ),
-                  ],
-                ),
-              ],
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  // 모델 형식 표시
+                  _buildInfoChip(
+                    context,
+                    icon: Icons.category,
+                    label: _getModelFormat(model.name),
+                    isSelected: isSelected,
+                  ),
+                  if (model.architecture != null)
+                    _buildInfoChip(
+                      context,
+                      icon: Icons.architecture,
+                      label: model.architecture!,
+                      isSelected: isSelected,
+                    ),
+                  if (model.quantization != null)
+                    _buildInfoChip(
+                      context,
+                      icon: Icons.compress,
+                      label: model.quantization!,
+                      isSelected: isSelected,
+                    ),
+                ],
+              ),
               
               // 선택 버튼
               if (!isSelected) ...[
@@ -156,6 +161,19 @@ class ModelCard extends StatelessWidget {
         ),
       ),
     );
+  }
+  
+  /// 모델 형식 가져오기
+  String _getModelFormat(String fileName) {
+    final lowerName = fileName.toLowerCase();
+    if (lowerName.endsWith('.gguf')) {
+      return 'GGUF';
+    } else if (lowerName.endsWith('.onnx')) {
+      return 'ONNX';
+    } else if (lowerName.endsWith('.tflite') || lowerName.endsWith('.lite')) {
+      return 'TFLite';
+    }
+    return 'Unknown';
   }
   
   /// 정보 칩 빌드

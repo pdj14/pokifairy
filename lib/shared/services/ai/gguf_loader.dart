@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'native_bindings.dart';
+import 'sampling_strategy.dart';
 
 /// GGUF 모델 로더 (향후 실제 구현용)
 class GGUFLoader {
@@ -148,12 +149,22 @@ class GGUFInferenceEngine implements InferenceEngine {
     }
     
     try {
-      // FFI를 통해 스트리밍 텍스트 생성 (자동 이어쓰기 활성화)
-      await for (final chunk in _bindings.generateTextStream(prompt, 
+      // 질문 유형에 따라 자동으로 샘플링 파라미터 선택
+      final samplingParams = SamplingStrategy.selectParams(prompt);
+      
+      // FFI를 통해 스트리밍 텍스트 생성 (자동 샘플링 전략)
+      // Stop sequences는 native_bindings.dart에서 기본값으로 처리됨
+      await for (final chunk in _bindings.generateTextStream(
+        prompt, 
         maxTokens: maxTokens, 
-        autoContinue: true, 
-        maxTotalTokens: 4096,
-        respectShortAnswers: false)) {
+        autoContinue: false, // 짧은 답변을 위해 자동 이어쓰기 비활성화
+        maxTotalTokens: 512, // 총 토큰 수 제한
+        respectShortAnswers: true, // 짧은 답변 존중
+        temperature: samplingParams.temperature,
+        topK: samplingParams.topK,
+        topP: samplingParams.topP,
+        repeatPenalty: samplingParams.repeatPenalty,
+      )) {
         yield chunk;
       }
     } catch (e) {

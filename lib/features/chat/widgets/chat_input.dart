@@ -11,10 +11,14 @@ class ChatInput extends StatefulWidget {
     super.key,
     required this.onSend,
     this.enabled = true,
+    this.onCancel,
+    this.isGenerating = false,
   });
 
   final Function(String) onSend;
   final bool enabled;
+  final VoidCallback? onCancel;
+  final bool isGenerating;
 
   @override
   State<ChatInput> createState() => _ChatInputState();
@@ -67,10 +71,73 @@ class _ChatInputState extends State<ChatInput> {
       _hasText = false;
     });
     
-    // 포커스 유지
-    _focusNode.requestFocus();
+    // 키보드 내리기
+    _focusNode.unfocus();
   }
 
+  /// 전송 버튼 빌드
+  Widget _buildSendButton(ThemeData theme, AppLocalizations l10n) {
+    return AnimatedContainer(
+      key: const ValueKey('send'),
+      duration: const Duration(milliseconds: 200),
+      decoration: BoxDecoration(
+        color: widget.enabled && _hasText
+            ? theme.colorScheme.primary
+            : theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: widget.enabled && _hasText
+            ? [
+                BoxShadow(
+                  color: theme.colorScheme.primary.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : null,
+      ),
+      child: IconButton(
+        onPressed: widget.enabled && _hasText ? _handleSend : null,
+        icon: Icon(
+          Icons.send,
+          color: widget.enabled && _hasText
+              ? theme.colorScheme.onPrimary
+              : theme.colorScheme.onSurface.withOpacity(0.3),
+        ),
+        iconSize: 24,
+        padding: const EdgeInsets.all(12),
+        tooltip: widget.enabled ? l10n.chatInputHint : null,
+      ),
+    );
+  }
+  
+  /// 중단 버튼 빌드
+  Widget _buildStopButton(ThemeData theme) {
+    return Container(
+      key: const ValueKey('stop'),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.errorContainer,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.error.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: IconButton(
+        onPressed: widget.onCancel,
+        icon: Icon(
+          Icons.stop,
+          color: theme.colorScheme.onErrorContainer,
+        ),
+        iconSize: 24,
+        padding: const EdgeInsets.all(12),
+        tooltip: '응답 중단',
+      ),
+    );
+  }
+  
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -135,35 +202,12 @@ class _ChatInputState extends State<ChatInput> {
               ),
             ),
             const SizedBox(width: 8),
-            AnimatedContainer(
+            // AI 생성 중일 때는 중단 버튼, 아니면 전송 버튼
+            AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                color: widget.enabled && _hasText
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: widget.enabled && _hasText
-                    ? [
-                        BoxShadow(
-                          color: theme.colorScheme.primary.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ]
-                    : null,
-              ),
-              child: IconButton(
-                onPressed: widget.enabled && _hasText ? _handleSend : null,
-                icon: Icon(
-                  Icons.send,
-                  color: widget.enabled && _hasText
-                      ? theme.colorScheme.onPrimary
-                      : theme.colorScheme.onSurface.withOpacity(0.3),
-                ),
-                iconSize: 24,
-                padding: const EdgeInsets.all(12),
-                tooltip: widget.enabled ? l10n.chatInputHint : null,
-              ),
+              child: widget.isGenerating
+                  ? _buildStopButton(theme)
+                  : _buildSendButton(theme, l10n),
             ),
           ],
         ),

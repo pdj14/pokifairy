@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/model/ai_message.dart';
 import '../../../shared/providers/ai_providers.dart';
+import '../../../shared/providers/fairy_providers.dart';
 import '../../../shared/services/startup_service.dart';
 
 /// 간단한 UUID 생성 함수
@@ -25,6 +26,9 @@ class ChatController extends Notifier<List<AIMessage>> {
   }
   
   static const int maxMessages = 100;
+  
+  // 생성 중단 플래그
+  bool _isCancelled = false;
   
   /// 메시지 전송 및 AI 응답 받기 (스트리밍 지원)
   Future<void> sendMessage(String content) async {
@@ -103,43 +107,97 @@ class ChatController extends Notifier<List<AIMessage>> {
         ];
       }
       
-      // 4. AI 서비스에서 스트리밍 응답 받기
-      final responseStream = service.generateResponseStream(content);
+      // 4. 요정 이름 가져오기
+      final fairy = ref.read(fairyProvider);
+      final fairyName = fairy?.name ?? '친구';
+      
+      // 5. AI 서비스에서 스트리밍 응답 받기
+      _isCancelled = false;
+      final responseStream = service.generateResponseStream(content, fairyName: fairyName);
       
       String accumulatedContent = '';
       
-      await for (final chunk in responseStream) {
-        accumulatedContent += chunk;
+      // 스트림 처리
+      try {
+        await for (final chunk in responseStream) {
+          if (_isCancelled) break;
+          
+          accumulatedContent += chunk;
+          
+          // 스트리밍 중 메시지 업데이트
+          final updatedMessage = aiMessage.copyWith(
+            content: accumulatedContent,
+            status: MessageStatus.sending,
+          );
+          
+          state = [
+            ...state.where((m) => m.id != aiMessageId),
+            updatedMessage,
+          ];
+        }
         
-        // 스트리밍 중 메시지 업데이트
-        final updatedMessage = aiMessage.copyWith(
-          content: accumulatedContent,
-          status: MessageStatus.sending,
+        // 스트림 완료 처리
+        if (_isCancelled) {
+          // 중단된 경우
+          final cancelledMessage = AIMessage(
+            id: aiMessageId,
+            content: accumulatedContent.isEmpty 
+                ? '(응답이 중단되었습니다)'
+                : accumulatedContent,
+            isUser: false,
+            timestamp: DateTime.now(),
+            status: MessageStatus.sent,
+            metadata: {'cancelled': true},
+          );
+          
+          state = [
+            ...state.where((m) => m.id != aiMessageId),
+            cancelledMessage,
+          ];
+        } else {
+          // 정상 완료
+          final finalMessage = AIMessage(
+            id: aiMessageId,
+            content: accumulatedContent,
+            isUser: false,
+            timestamp: DateTime.now(),
+            status: MessageStatus.sent,
+          );
+          
+          state = [
+            ...state.where((m) => m.id != aiMessageId),
+            finalMessage,
+          ];
+        }
+        
+        // 히스토리 저장 및 정리
+        _trimHistory();
+        await _saveHistory();
+        
+      } catch (streamError, stackTrace) {
+        print('스트림 처리 중 오류: $streamError');
+        print('Stack trace: $stackTrace');
+        
+        // 에러 메시지로 업데이트
+        final errorMessage = AIMessage(
+          id: aiMessageId,
+          content: '죄송해요, 응답을 생성하는 중에 문제가 발생했어요. 😢\n다시 시도해주시겠어요?',
+          isUser: false,
+          timestamp: DateTime.now(),
+          status: MessageStatus.error,
+          metadata: {'error': streamError.toString()},
         );
         
         state = [
           ...state.where((m) => m.id != aiMessageId),
-          updatedMessage,
+          errorMessage,
         ];
+        
+        await _saveHistory();
+      } finally {
+        // 완료 후 플래그 리셋
+        _isCancelled = false;
       }
-      
-      // 5. 완료 상태로 변경
-      final finalMessage = AIMessage(
-        id: aiMessageId,
-        content: accumulatedContent,
-        isUser: false,
-        timestamp: DateTime.now(),
-        status: MessageStatus.sent,
-      );
-      
-      state = [
-        ...state.where((m) => m.id != aiMessageId),
-        finalMessage,
-      ];
-      
-      // 6. 히스토리 저장 및 정리
-      _trimHistory();
-      await _saveHistory();
       
     } catch (e, stackTrace) {
       print('AI 응답 생성 중 오류 발생: $e');
@@ -161,8 +219,21 @@ class ChatController extends Notifier<List<AIMessage>> {
       ];
       
       await _saveHistory();
+      _isCancelled = false;
     }
   }
+  
+  /// AI 응답 생성 중단
+  /// 
+  /// 현재 진행 중인 AI 응답 생성을 중단합니다.
+  void cancelGeneration() {
+    print('AI 응답 생성 중단 요청');
+    _isCancelled = true;
+  }
+  
+  /// 현재 AI가 응답 생성 중인지 확인
+  bool get isGenerating => _isCancelled == false && state.isNotEmpty && 
+      state.last.status == MessageStatus.sending && !state.last.isUser;
   
   /// 메시지 재시도
   /// 

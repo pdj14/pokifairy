@@ -349,12 +349,12 @@ class ModelManager {
     }
   }
   
-  /// 모델 폴더를 스캔하여 모든 GGUF 모델 파일을 찾습니다.
+  /// 모델 폴더를 스캔하여 모든 AI 모델 파일을 찾습니다.
   /// 
   /// 이 메서드는 다음 작업을 수행합니다:
   /// 1. 저장소 권한 확인 및 요청
   /// 2. 모델 폴더 존재 확인 (없으면 생성)
-  /// 3. `.gguf` 확장자를 가진 모든 파일 검색
+  /// 3. `.gguf`, `.onnx`, `.tflite` 확장자를 가진 모든 파일 검색
   /// 4. 각 모델의 메타데이터 수집
   /// 5. 크기 순으로 정렬 (큰 것부터)
   /// 
@@ -398,23 +398,46 @@ class ModelManager {
     
     try {
       await for (final entity in modelsDir.list()) {
-        if (entity is File && entity.path.toLowerCase().endsWith('.gguf')) {
-          try {
-            final stat = await entity.stat();
-            final name = entity.path.split('/').last;
-            
-            print('모델 파일 발견: $name (${formatFileSize(stat.size)})');
-            
-            models.add(ModelInfo(
-              name: name,
-              path: entity.path,
-              size: stat.size,
-              formattedSize: formatFileSize(stat.size),
-              architecture: guessArchitecture(name),
-              quantization: guessQuantization(name),
-            ));
-          } catch (e) {
-            print('모델 파일 정보 읽기 실패: ${entity.path} - $e');
+        if (entity is File) {
+          final lowerPath = entity.path.toLowerCase();
+          
+          // .onnx.data 파일은 스킵 (메인 .onnx 파일만 표시)
+          if (lowerPath.endsWith('.onnx.data')) {
+            continue;
+          }
+          
+          // 지원하는 모델 형식: GGUF, ONNX, TFLite
+          if (lowerPath.endsWith('.gguf') || 
+              lowerPath.endsWith('.onnx') || 
+              lowerPath.endsWith('.tflite') ||
+              lowerPath.endsWith('.lite')) {
+            try {
+              final stat = await entity.stat();
+              final name = entity.path.split('/').last;
+              
+              // 모델 형식 감지
+              String format = 'Unknown';
+              if (lowerPath.endsWith('.gguf')) {
+                format = 'GGUF';
+              } else if (lowerPath.endsWith('.onnx')) {
+                format = 'ONNX';
+              } else if (lowerPath.endsWith('.tflite') || lowerPath.endsWith('.lite')) {
+                format = 'TFLite';
+              }
+              
+              print('모델 파일 발견: $name [$format] (${formatFileSize(stat.size)})');
+              
+              models.add(ModelInfo(
+                name: name,
+                path: entity.path,
+                size: stat.size,
+                formattedSize: formatFileSize(stat.size),
+                architecture: guessArchitecture(name),
+                quantization: guessQuantization(name),
+              ));
+            } catch (e) {
+              print('모델 파일 정보 읽기 실패: ${entity.path} - $e');
+            }
           }
         }
       }

@@ -473,6 +473,11 @@ class NativeBindings {
       
       // 컨텍스트 초기화 (params를 by-value로 전달)
       final contextParams = _llamaContextDefaultParams();
+      // 안전한 컨텍스트 크기 설정
+      contextParams.nCtx = 2048;  // 컨텍스트 크기
+      contextParams.nBatch = 512; // 배치 크기 (nCtx보다 작아야 함)
+      contextParams.nUbatch = 128; // 물리적 배치 크기
+      contextParams.nThreads = 4; // 스레드 수
       _context = _llamaInitFromModel(_model!, contextParams);
       
       if (_context == nullptr) {
@@ -491,7 +496,24 @@ class NativeBindings {
   }
   
   /// 스트리밍 텍스트 생성 (초등학생용)
-  Stream<String> generateTextStream(String prompt, {int maxTokens = 1024, int minTokensBeforeEog = 32, bool autoContinue = true, int maxTotalTokens = 4096, bool respectShortAnswers = true}) async* {
+  /// 
+  /// 샘플링 파라미터:
+  /// - temperature: 0.7-0.9 권장 (낮을수록 결정적, 높을수록 창의적)
+  /// - topK: 40 권장 (고려할 상위 토큰 수)
+  /// - topP: 0.95 권장 (누적 확률 임계값)
+  /// - repeatPenalty: 1.1 권장 (반복 억제 강도)
+  Stream<String> generateTextStream(
+    String prompt, {
+    int maxTokens = 1024,
+    int minTokensBeforeEog = 32,
+    bool autoContinue = true,
+    int maxTotalTokens = 4096,
+    bool respectShortAnswers = true,
+    double temperature = 0.8,
+    int topK = 40,
+    double topP = 0.95,
+    double repeatPenalty = 1.1,
+  }) async* {
     if (!_isInitialized || _model == null || _context == null) {
       yield 'FFI가 초기화되지 않았거나 모델이 로드되지 않았습니다';
       return;
@@ -544,9 +566,21 @@ class NativeBindings {
           autoCont = false;
         }
         
+        // 컨텍스트 크기 확인
+        final ctxSize = _llamaNCtx(_context!);
+        print('컨텍스트 크기: $ctxSize, 프롬프트 토큰 수: $tokenCount');
+        
+        // 프롬프트가 컨텍스트 크기를 초과하는지 확인
+        if (tokenCount >= ctxSize - 64) {
+          malloc.free(promptPtr);
+          malloc.free(tokens);
+          yield '⚠️ 프롬프트가 너무 깁니다 (토큰: $tokenCount, 최대: ${ctxSize - 64}).\n더 짧게 입력해주세요.';
+          return;
+        }
+        
         // 프롬프트 배치: helper 사용 (llama_batch_get_one)
         print('프롬프트 배치 구성 시작 (ubatch get_one)...');
-        const int chunkSize = 32; // 작은 단위로 나눠 디코드하여 KV 슬롯 문제 회피
+        const int chunkSize = 128; // 작은 단위로 나눠 디코드하여 KV 슬롯 문제 회피
         int processed = 0;
         allTokensProcessed = true;
         while (processed < tokenCount) {
@@ -557,16 +591,19 @@ class NativeBindings {
             chunkPtr[i] = tokens[processed + i];
           }
           final batch = _llamaBatchGetOne(chunkPtr, cur);
+          // 마지막 청크의 마지막 토큰만 logits 계산
           if (batch.logits != nullptr) {
+            final isLastChunk = (processed + cur >= tokenCount);
             for (int i = 0; i < cur; i++) {
-              batch.logits[i] = (i == cur - 1) ? 1 : 0;
+              batch.logits[i] = (isLastChunk && i == cur - 1) ? 1 : 0;
             }
           }
-          print('llama_decode 호출 시작 (프롬프트 ubatch: $processed~${processed + cur - 1})');
+          print('llama_decode 호출 (청크: $processed~${processed + cur - 1}/$tokenCount)');
           final dr = _llamaDecode(_context!, batch);
           malloc.free(chunkPtr);
-          print('llama_decode 결과: $dr');
-          if (dr != 0) {
+                    if (dr != 0) {
+            print('❌ llama_decode 실패 (코드:$dr) - 위치: $processed/$tokenCount');
+            print('   컨텍스트 크기: $ctxSize, 청크 크기: $cur');
             allTokensProcessed = false;
             lastDecodeResult = dr;
             break;
@@ -718,7 +755,32 @@ class NativeBindings {
               }
               if (wrote > 0) {
                 final bytes = outBuf.asTypedList(wrote);
-                currentText = utf8.decode(bytes, allowMalformed: true);
+                
+                // UTF-8 디코딩 시 불완전한 문자 처리
+                String decodedText;
+                try {
+                  decodedText = utf8.decode(bytes, allowMalformed: false);
+                } catch (e) {
+                  // 불완전한 UTF-8 시퀀스가 있으면 마지막 몇 바이트를 제외하고 디코딩
+                  int validLength = bytes.length;
+                  while (validLength > 0) {
+                    try {
+                      decodedText = utf8.decode(bytes.sublist(0, validLength), allowMalformed: false);
+                      break;
+                    } catch (_) {
+                      validLength--;
+                    }
+                  }
+                  if (validLength == 0) {
+                    // 디코딩 가능한 바이트가 없으면 스킵
+                    malloc.free(outBuf);
+                    malloc.free(genPtr);
+                    continue;
+                  }
+                  decodedText = utf8.decode(bytes.sublist(0, validLength), allowMalformed: false);
+                }
+                
+                currentText = decodedText;
                 
                 // 새로운 텍스트가 있으면 스트리밍으로 전송
                 if (currentText.length > lastYieldedLength) {
@@ -858,14 +920,41 @@ class NativeBindings {
             }
             if (wrote > 0) {
               final bytes = outBuf.asTypedList(wrote);
-              currentText = utf8.decode(bytes, allowMalformed: true);
+              
+              // UTF-8 디코딩 시 불완전한 문자 처리
+              String decodedText;
+              try {
+                decodedText = utf8.decode(bytes, allowMalformed: false);
+              } catch (e) {
+                // 불완전한 UTF-8 시퀀스 처리
+                int validLength = bytes.length;
+                while (validLength > 0) {
+                  try {
+                    decodedText = utf8.decode(bytes.sublist(0, validLength), allowMalformed: false);
+                    break;
+                  } catch (_) {
+                    validLength--;
+                  }
+                }
+                if (validLength == 0) {
+                  malloc.free(outBuf);
+                  malloc.free(genPtr);
+                  return; // 디코딩 불가능하면 종료
+                }
+                decodedText = utf8.decode(bytes.sublist(0, validLength), allowMalformed: false);
+              }
+              
+              currentText = decodedText;
               
               // 남은 텍스트가 있으면 전송
               if (currentText.length > lastYieldedLength) {
                 final remainingText = currentText.substring(lastYieldedLength);
-                print('1차 루프 완료 후 남은 텍스트 전송: "$remainingText"');
-                yield remainingText;
-                lastYieldedLength = currentText.length;
+                // 유효한 텍스트만 전송 (제어 문자 제외)
+                if (remainingText.trim().isNotEmpty && !remainingText.contains('�')) {
+                  print('1차 루프 완료 후 남은 텍스트 전송: "$remainingText"');
+                  yield remainingText;
+                  lastYieldedLength = currentText.length;
+                }
               }
             }
             malloc.free(outBuf);
@@ -915,7 +1004,31 @@ class NativeBindings {
                 }
                 if (wrote > 0) {
                   final bytes = outBuf.asTypedList(wrote);
-                  currentText = utf8.decode(bytes, allowMalformed: true);
+                  
+                  // UTF-8 디코딩 시 불완전한 문자 처리
+                  String decodedText;
+                  try {
+                    decodedText = utf8.decode(bytes, allowMalformed: false);
+                  } catch (e) {
+                    // 불완전한 UTF-8 시퀀스 처리
+                    int validLength = bytes.length;
+                    while (validLength > 0) {
+                      try {
+                        decodedText = utf8.decode(bytes.sublist(0, validLength), allowMalformed: false);
+                        break;
+                      } catch (_) {
+                        validLength--;
+                      }
+                    }
+                    if (validLength == 0) {
+                      malloc.free(outBuf);
+                      malloc.free(genPtr);
+                      continue; // 디코딩 불가능하면 스킵
+                    }
+                    decodedText = utf8.decode(bytes.sublist(0, validLength), allowMalformed: false);
+                  }
+                  
+                  currentText = decodedText;
                   
                   // 새로운 텍스트가 있으면 스트리밍으로 전송
                   if (currentText.length > lastYieldedLength) {
@@ -1099,9 +1212,20 @@ class NativeBindings {
           autoCont = false;
         }
         
+        // 컨텍스트 크기 확인
+        final ctxSize = _llamaNCtx(_context!);
+        print('컨텍스트 크기: $ctxSize, 프롬프트 토큰 수: $tokenCount');
+        
+        // 프롬프트가 컨텍스트 크기를 초과하는지 확인
+        if (tokenCount >= ctxSize - 64) {
+          malloc.free(promptPtr);
+          malloc.free(tokens);
+          return '⚠️ 프롬프트가 너무 깁니다 (토큰: $tokenCount, 최대: ${ctxSize - 64}).\n더 짧게 입력해주세요.';
+        }
+        
         // 프롬프트 배치: helper 사용 (llama_batch_get_one)
         print('프롬프트 배치 구성 시작 (ubatch get_one)...');
-        const int chunkSize = 32; // 작은 단위로 나눠 디코드하여 KV 슬롯 문제 회피
+        const int chunkSize = 128; // 청크 크기 증가 (더 효율적)
         int processed = 0;
         allTokensProcessed = true;
         while (processed < tokenCount) {
@@ -1112,16 +1236,19 @@ class NativeBindings {
             chunkPtr[i] = tokens[processed + i];
           }
           final batch = _llamaBatchGetOne(chunkPtr, cur);
+          // 마지막 청크의 마지막 토큰만 logits 계산
           if (batch.logits != nullptr) {
+            final isLastChunk = (processed + cur >= tokenCount);
             for (int i = 0; i < cur; i++) {
-              batch.logits[i] = (i == cur - 1) ? 1 : 0;
+              batch.logits[i] = (isLastChunk && i == cur - 1) ? 1 : 0;
             }
           }
-          print('llama_decode 호출 시작 (프롬프트 ubatch: $processed~${processed + cur - 1})');
+          print('llama_decode 호출 (청크: $processed~${processed + cur - 1}/$tokenCount)');
           final dr = _llamaDecode(_context!, batch);
           malloc.free(chunkPtr);
-          print('llama_decode 결과: $dr');
-          if (dr != 0) {
+                    if (dr != 0) {
+            print('❌ llama_decode 실패 (코드:$dr) - 위치: $processed/$tokenCount');
+            print('   컨텍스트 크기: $ctxSize, 청크 크기: $cur');
             allTokensProcessed = false;
             lastDecodeResult = dr;
             break;
@@ -1250,7 +1377,27 @@ class NativeBindings {
             }
             if (wrote > 0) {
               final bytes = outBuf.asTypedList(wrote);
-              detok = utf8.decode(bytes, allowMalformed: true);
+              
+              // UTF-8 디코딩 시 불완전한 문자 처리
+              try {
+                detok = utf8.decode(bytes, allowMalformed: false);
+              } catch (e) {
+                // 불완전한 UTF-8 시퀀스 처리
+                int validLength = bytes.length;
+                while (validLength > 0) {
+                  try {
+                    detok = utf8.decode(bytes.sublist(0, validLength), allowMalformed: false);
+                    break;
+                  } catch (_) {
+                    validLength--;
+                  }
+                }
+                if (validLength == 0) {
+                  detok = ''; // 디코딩 불가능
+                } else {
+                  detok = utf8.decode(bytes.sublist(0, validLength), allowMalformed: false);
+                }
+              }
             }
             malloc.free(outBuf);
             malloc.free(genPtr);

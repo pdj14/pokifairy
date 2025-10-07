@@ -270,39 +270,86 @@ class _ModelSelectionPageState extends ConsumerState<ModelSelectionPage> {
   Future<void> _selectModel(BuildContext context, ModelInfo model) async {
     final l10n = AppLocalizations.of(context)!;
     
+    // 로딩 다이얼로그 표시
+    if (context.mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text('${model.name}\n모델을 로드하는 중...'),
+            ],
+          ),
+        ),
+      );
+    }
+    
     try {
-      // 1. 모델 경로만 저장 (빠른 작업)
+      // 1. 모델 경로 저장
       await ModelManager.setCurrentModel(model.path);
       
       // 2. 현재 모델 상태 업데이트
       ref.read(currentModelProvider.notifier).setModel(model);
       
-      // 3. AI 서비스 초기화 상태 무효화 (다음 채팅 시 재초기화됨)
+      // 3. AI 서비스 재초기화 (기존 모델 언로드 및 새 모델 로드)
+      final aiService = ref.read(aiServiceProvider);
+      print('모델 변경: 기존 모델 언로드 중...');
+      aiService.dispose(); // 기존 모델 완전히 정리
+      
+      print('모델 변경: 새 모델 로드 중... (${model.name})');
+      final reinitialized = await aiService.reinitialize();
+      
+      if (!reinitialized) {
+        throw Exception('새 모델 로드 실패');
+      }
+      
+      // 4. 프로바이더 무효화
       ref.invalidate(aiInitializationProvider);
       ref.invalidate(lazyAiInitializationProvider);
       ref.invalidate(currentModelInfoProvider);
       
-      // 4. 성공 메시지 표시
+      print('모델 변경 완료: ${model.name}');
+      
+      // 로딩 다이얼로그 닫기
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+      
+      // 5. 성공 메시지 표시 및 이전 화면으로 돌아가기
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n.modelSelected),
+            content: Text('✅ ${l10n.modelSelected}\n${model.name}'),
             backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            duration: const Duration(seconds: 2),
+            duration: const Duration(seconds: 3),
           ),
         );
+        
+        // 모델 선택 후 이전 화면으로 돌아가기
+        if (context.canPop()) {
+          context.pop();
+        }
       }
       
-      // 참고: AI 서비스는 다음 채팅 메시지 전송 시 자동으로 초기화됩니다.
-      // 이렇게 하면 모델 선택이 빠르게 완료되고 UI가 멈추지 않습니다.
-      
     } catch (e) {
+      print('모델 선택 실패: $e');
+      
+      // 로딩 다이얼로그 닫기
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+      
       // 에러 메시지 표시
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.modelSelectionFailed}: $e'),
+            content: Text('❌ ${l10n.modelSelectionFailed}\n$e'),
             backgroundColor: Theme.of(context).colorScheme.errorContainer,
+            duration: const Duration(seconds: 5),
           ),
         );
       }

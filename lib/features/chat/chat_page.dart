@@ -90,6 +90,15 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       appBar: AppBar(
         title: Text(fairy?.name ?? l10n.chatTitle),
         actions: [
+          // AI 응답 중단 버튼 (생성 중일 때만 표시)
+          if (isAiResponding)
+            IconButton(
+              icon: const Icon(Icons.stop_circle_outlined),
+              tooltip: '응답 중단',
+              onPressed: () {
+                ref.read(chatControllerProvider.notifier).cancelGeneration();
+              },
+            ),
           // 모델 변경 버튼
           IconButton(
             icon: const Icon(Icons.settings_suggest),
@@ -184,6 +193,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               ChatInput(
                 onSend: _handleSendMessage,
                 enabled: !isAiResponding && !isAiLoading,
+                isGenerating: isAiResponding,
+                onCancel: () {
+                  ref.read(chatControllerProvider.notifier).cancelGeneration();
+                },
               ),
             ],
           );

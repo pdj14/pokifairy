@@ -5,6 +5,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'gguf_loader.dart';
 import 'model_manager.dart';
+import 'model_factory.dart';
+import 'question_classifier.dart';
 
 /// On-Device AI 서비스
 /// 
@@ -117,29 +119,44 @@ class AIService {
     
     print('선택된 모델: $_modelPath');
     
-    // 모델 정보 확인
-    _addDebugLog('모델 정보 로드 중...');
-    _modelInfo = await GGUFLoader.getModelInfo(_modelPath!);
+    // 모델 형식 자동 감지
+    _addDebugLog('모델 형식 감지 중...');
+    final modelFormat = await ModelFactory.detectFormat(_modelPath!);
+    final formatName = ModelFactory.getFormatName(modelFormat);
+    print('감지된 모델 형식: $formatName');
     
-    print('모델 정보: $_modelInfo');
+    // 파일 크기 확인
+    final fileSize = await ModelManager.getModelFileSize(_modelPath!);
+    final formattedSize = ModelManager.formatFileSize(fileSize);
     
-    if (_modelInfo!['isValid']) {
-      final fileSize = await ModelManager.getModelFileSize(_modelPath!);
-      final formattedSize = ModelManager.formatFileSize(fileSize);
-      _addDebugLog('유효한 GGUF 모델 파일 발견: $formattedSize');
-      print('유효한 GGUF 모델 파일 발견: $formattedSize');
-      
-      // 실제 GGUF 엔진 로드
-      _addDebugLog('GGUF 추론 엔진 로드 중...');
-      _inferenceEngine = GGUFInferenceEngine();
-      await _inferenceEngine!.loadModel(_modelPath!);
-      _addDebugLog('GGUF 추론 엔진 로드 성공');
-      print('모바일 환경에서 실제 GGUF 엔진 로드 성공');
+    // 모델 정보 저장 (형식별)
+    if (formatName.contains('GGUF')) {
+      // GGUF 모델만 상세 검증
+      _modelInfo = await GGUFLoader.getModelInfo(_modelPath!);
+      if (!_modelInfo!['isValid']) {
+        final error = '모델 파일 검증 실패: ${_modelInfo!['error']}';
+        _addDebugLog(error);
+        throw Exception(error);
+      }
     } else {
-      final error = '모델 파일 검증 실패: ${_modelInfo!['error']}';
-      _addDebugLog(error);
-      throw Exception(error);
+      // ONNX, TFLite는 기본 정보만
+      _modelInfo = {
+        'fileSize': fileSize,
+        'isValid': true,
+        'format': formatName,
+        'platform': 'mobile',
+      };
     }
+    
+    _addDebugLog('유효한 $formatName 모델 파일 발견: $formattedSize');
+    print('유효한 $formatName 모델 파일 발견: $formattedSize');
+    
+    // 적절한 엔진 로드
+    _addDebugLog('$formatName 추론 엔진 로드 중...');
+    _inferenceEngine = await ModelFactory.createEngine(_modelPath!);
+    await _inferenceEngine!.loadModel(_modelPath!);
+    _addDebugLog('$formatName 추론 엔진 로드 성공');
+    print('모바일 환경에서 $formatName 엔진 로드 성공');
     
     _addDebugLog('모바일 환경 초기화 완료');
     print('모바일 환경 초기화 완료');
@@ -187,6 +204,7 @@ class AIService {
   /// 
   /// Parameters:
   ///   - `prompt`: 사용자의 질문 또는 입력 텍스트
+  ///   - `fairyName`: 선택한 요정의 이름 (기본값: '친구')
   /// 
   /// Returns:
   ///   - `Stream<String>`: AI 응답 텍스트의 스트림 (토큰 단위)
@@ -200,7 +218,7 @@ class AIService {
   /// 
   /// 사용 예:
   /// ```dart
-  /// await for (final chunk in aiService.generateResponseStream('안녕하세요')) {
+  /// await for (final chunk in aiService.generateResponseStream('안녕하세요', fairyName: '피카')) {
   ///   print(chunk); // 실시간으로 응답 출력
   /// }
   /// ```
@@ -208,9 +226,56 @@ class AIService {
   /// 주의:
   /// - 앱이 백그라운드로 전환되면 생성이 중단됩니다
   /// - 에러 발생 시 사용자 친화적인 메시지를 반환합니다
-  Stream<String> generateResponseStream(String prompt) async* {
+  Stream<String> generateResponseStream(String prompt, {String fairyName = '친구'}) async* {
+    // 특수 명령어 처리: 모델 정보 확인
+    if (prompt.trim() == '/model' || 
+        prompt.trim() == '/모델' || 
+        prompt.trim() == '모델 정보' ||
+        prompt.trim() == '현재 모델') {
+      yield await _getModelInfoMessage();
+      return;
+    }
+    
+    // 질문 분류 및 답변 가능 여부 판단
+    final answerability = QuestionClassifier.classify(prompt);
+    final directResponse = QuestionClassifier.getDirectResponse(prompt, answerability);
+    
+    // 답변 불가능한 질문은 즉시 응답
+    if (directResponse != null) {
+      _addDebugLog('답변 불가능한 질문 감지: $answerability');
+      yield directResponse;
+      return;
+    }
+    
+    // 초기화 확인 및 자동 초기화
     if (!_isInitialized) {
-      await initialize();
+      _addDebugLog('서비스 미초기화 - 자동 초기화 시작');
+      final initialized = await initialize();
+      if (!initialized) {
+        yield '⚠️ AI 서비스 초기화에 실패했습니다.\n앱을 다시 시작해주세요.';
+        return;
+      }
+    }
+    
+    // 모델이 언로드된 경우 재로드 시도
+    if (_inferenceEngine == null && _modelPath != null) {
+      _addDebugLog('모델 언로드 감지 - 재로드 시도');
+      yield '🔄 AI 모델을 다시 로드하는 중...\n';
+      
+      try {
+        final modelFormat = await ModelFactory.detectFormat(_modelPath!);
+        final formatName = ModelFactory.getFormatName(modelFormat);
+        
+        _inferenceEngine = await ModelFactory.createEngine(_modelPath!);
+        await _inferenceEngine!.loadModel(_modelPath!);
+        
+        _addDebugLog('$formatName 모델 재로드 성공');
+        yield '✅ 모델 로드 완료!\n\n';
+      } catch (e) {
+        _addDebugLog('모델 재로드 실패: $e');
+        yield '❌ 모델 재로드 실패: $e\n앱을 다시 시작해주세요.';
+        return;
+      }
     }
     
     // 백그라운드 상태에서는 AI 작업 중단
@@ -223,10 +288,11 @@ class AIService {
     try {
       if (_inferenceEngine != null) {
         // 초등학생에 맞는 프롬프트 수정
-        final childFriendlyPrompt = _makeChildFriendlyPrompt(prompt);
+        final childFriendlyPrompt = _makeChildFriendlyPrompt(prompt, fairyName);
         
-        // 배터리 최적화 모드에 따라 토큰 한도 조정
-        final maxTokens = _batteryOptimizationEnabled ? 512 : 1024;
+        // 초등학생용 짧은 답변 (배터리 최적화 고려)
+        // 2-3문장 = 약 50-150 토큰
+        final maxTokens = _batteryOptimizationEnabled ? 128 : 256;
         
         // 스트리밍 응답 생성
         await for (final chunk in _inferenceEngine!.generateStream(
@@ -287,6 +353,63 @@ class AIService {
     }
   }
 
+  /// 현재 모델 정보를 사용자 친화적인 메시지로 반환
+  Future<String> _getModelInfoMessage() async {
+    final buffer = StringBuffer();
+    
+    buffer.writeln('🤖 현재 AI 모델 정보\n');
+    buffer.writeln('━━━━━━━━━━━━━━━━━━━━━━');
+    
+    if (_modelPath != null) {
+      // 모델 파일명
+      final fileName = _modelPath!.split('/').last;
+      buffer.writeln('📁 모델: $fileName');
+      
+      // 모델 형식
+      try {
+        final format = await ModelFactory.detectFormat(_modelPath!);
+        final formatName = ModelFactory.getFormatName(format);
+        buffer.writeln('🔧 형식: $formatName');
+      } catch (e) {
+        buffer.writeln('🔧 형식: 알 수 없음');
+      }
+      
+      // 모델 크기
+      if (_modelInfo != null && _modelInfo!['fileSize'] != null) {
+        final size = _modelInfo!['fileSize'] as int;
+        final formattedSize = ModelManager.formatFileSize(size);
+        buffer.writeln('💾 크기: $formattedSize');
+      }
+      
+      // 로드 상태
+      if (_inferenceEngine != null) {
+        buffer.writeln('✅ 상태: 로드됨 (사용 가능)');
+      } else {
+        buffer.writeln('⚠️ 상태: 언로드됨 (재로드 필요)');
+      }
+      
+      // 초기화 시간
+      if (_initializationTime != null) {
+        final now = DateTime.now();
+        final duration = now.difference(_initializationTime!);
+        final hours = duration.inHours;
+        final minutes = duration.inMinutes % 60;
+        buffer.writeln('⏱️ 로드 시간: ${hours}시간 ${minutes}분 전');
+      }
+      
+      // 배터리 최적화
+      buffer.writeln('🔋 배터리 최적화: ${_batteryOptimizationEnabled ? "활성화" : "비활성화"}');
+      
+    } else {
+      buffer.writeln('❌ 모델이 선택되지 않았습니다.');
+    }
+    
+    buffer.writeln('━━━━━━━━━━━━━━━━━━━━━━');
+    buffer.writeln('\n💡 팁: 모델을 변경하려면 설정 버튼을 눌러주세요!');
+    
+    return buffer.toString();
+  }
+  
   /// 사용자 프롬프트를 아동 친화적인 형식으로 변환합니다.
   /// 
   /// 이 메서드는 AI가 초등학생에게 적합한 방식으로 응답하도록
@@ -298,28 +421,35 @@ class AIService {
   /// 
   /// Parameters:
   ///   - `userPrompt`: 원본 사용자 입력
+  ///   - `fairyName`: 선택한 요정의 이름
   /// 
   /// Returns:
   ///   - `String`: 시스템 프롬프트가 추가된 전체 프롬프트
-  String _makeChildFriendlyPrompt(String userPrompt) {
-    return '''당신은 초등학생 친구 '지키미'입니다.
+  String _makeChildFriendlyPrompt(String userPrompt, String fairyName) {
+    return '''당신은 '$fairyName'입니다. 초등학생 친구와 대화하세요.
 
-절대 금지:
-- 코드 블록(```) 사용 금지
-- "질문:", "답변:", "지키미:" 라벨 금지
-- 자문자답 금지
-- HTML 태그 금지
-- 반복 패턴 금지
+규칙:
+- 2-3문장으로 짧게 답변
+- 쉬운 말로 설명
+- 한 번만 답변하고 끝
+- 추가 질문 만들지 않기
 
-답변 스타일:
-- 친근하고 따뜻하게 😊
-- 쉽고 간단하게
-- 이모지 적당히 사용 🐻
-- 예시로 설명하기
+정직하게 답변하기:
+답변 가능 (알고 있는 것):
+- 일상적인 사실 (동물, 날씨, 계절 등)
+- 간단한 과학 (물이 끓는 온도, 식물이 자라는 방법 등)
+- 기본 상식 (인사, 예절, 감정 등)
 
-질문: $userPrompt
+"잘 모르겠어"라고 답변해야 하는 것:
+- 전문적이고 복잡한 내용 (양자역학, 의학, 법률 등)
+- 미래 예측 (10년 후, 100년 후 등)
+- 개인 정보 (특정인의 전화번호, 주소 등)
+- 최신 뉴스나 실시간 정보
+- 확실하지 않은 내용
 
-지키미:''';
+사용자: $userPrompt
+
+$fairyName:''';
   }
   
   /// 모델 정보 조회
@@ -378,7 +508,7 @@ class AIService {
   /// AI 서비스 재초기화 (모델 변경 시 사용)
   Future<bool> reinitialize() async {
     _addDebugLog('AI 서비스 재초기화 시작');
-    dispose();
+    dispose(keepModelPath: true); // 모델 경로 유지
     return await initialize();
   }
   
@@ -437,11 +567,17 @@ class AIService {
   }
   
   /// 리소스 정리
-  void dispose() {
-    _addDebugLog('AI 서비스 리소스 정리 시작');
+  /// 
+  /// keepModelPath가 true이면 모델 경로를 유지합니다 (재초기화용)
+  void dispose({bool keepModelPath = false}) {
+    _addDebugLog('AI 서비스 리소스 정리 시작 (경로 유지: $keepModelPath)');
     _inferenceEngine?.dispose();
     _isInitialized = false;
-    _modelPath = null;
+    
+    if (!keepModelPath) {
+      _modelPath = null;
+    }
+    
     _inferenceEngine = null;
     _modelInfo = null;
     _initializationTime = null;
